@@ -1,0 +1,75 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-01-01 20:58:24.688684",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "floor_no",
+  "unit_type",
+  "sale_area",
+  "carpet_area",
+  "terrace_area",
+  "built_up_area",
+  "common_area"
+ ],
+ "fields": [
+  {
+   "fieldname": "floor_no",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Floor No.",
+   "options": "Floors"
+  },
+  {
+   "fieldname": "unit_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Unit Type",
+   "options": "Unit Types"
+  },
+  {
+   "fieldname": "sale_area",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Sale Area"
+  },
+  {
+   "fieldname": "carpet_area",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Carpet Area"
+  },
+  {
+   "fieldname": "terrace_area",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Terrace Area"
+  },
+  {
+   "fieldname": "built_up_area",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Built up Area"
+  },
+  {
+   "fieldname": "common_area",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Common Area"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-01-01 21:00:40.522275",
+ "modified_by": "Administrator",
+ "module": "Realty Reflex",
+ "name": "Flats",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
