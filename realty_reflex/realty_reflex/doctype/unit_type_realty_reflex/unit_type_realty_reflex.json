@@ -1,0 +1,46 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-01-01 20:28:34.164922",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "unit_type",
+  "qty",
+  "mandatory_car_park"
+ ],
+ "fields": [
+  {
+   "fieldname": "unit_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Unit Type",
+   "options": "Unit Types"
+  },
+  {
+   "fieldname": "qty",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Qty"
+  },
+  {
+   "fieldname": "mandatory_car_park",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": " Mandatory Car Park"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-01-01 20:30:39.531091",
+ "modified_by": "Administrator",
+ "module": "Realty Reflex",
+ "name": "Unit Type Realty Reflex",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

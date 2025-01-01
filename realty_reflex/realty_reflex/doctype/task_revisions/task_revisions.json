@@ -1,0 +1,102 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-01-01 20:45:39.674409",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "date_and_time",
+  "budget_type",
+  "revision",
+  "built_up_area",
+  "rate",
+  "trans_amount",
+  "remark",
+  "entered_by",
+  "approved_by",
+  "status",
+  "attachment"
+ ],
+ "fields": [
+  {
+   "fieldname": "date_and_time",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Date and Time"
+  },
+  {
+   "fieldname": "budget_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Budget Type",
+   "options": "\nConcept Budget\nDesign Budget\nGFC"
+  },
+  {
+   "fieldname": "revision",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Revision"
+  },
+  {
+   "fieldname": "built_up_area",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Built up Area"
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Rate"
+  },
+  {
+   "fieldname": "trans_amount",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Trans. Amount"
+  },
+  {
+   "fieldname": "remark",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Remark"
+  },
+  {
+   "fieldname": "entered_by",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Entered by"
+  },
+  {
+   "fieldname": "approved_by",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Approved by"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "\nApproved\nPending\nCancelled"
+  },
+  {
+   "fieldname": "attachment",
+   "fieldtype": "Attach",
+   "label": "Attachment"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-01-01 20:50:14.250018",
+ "modified_by": "Administrator",
+ "module": "Realty Reflex",
+ "name": "Task Revisions",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
