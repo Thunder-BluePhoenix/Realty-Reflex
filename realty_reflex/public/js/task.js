@@ -1,4 +1,4 @@
-frappe.ui.form.on('Sub Project', {
+frappe.ui.form.on('Task', {
     validate: function(frm) {
         // Get the current field values
         let current_values = {
@@ -68,7 +68,7 @@ frappe.ui.form.on('Task Revisions', {
 
 
 // In task_custom.js
-frappe.ui.form.on('Sub Project', {
+frappe.ui.form.on('Task', {
     refresh: function(frm) {
         // Remove add/delete buttons from the grid
         frm.set_df_property('custom_revisions', 'cannot_add_rows', true);

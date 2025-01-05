@@ -44,7 +44,12 @@ app_license = "mit"
 
 # include js in doctype views
 doctype_js = {
-    "Project": "public/js/project.js"
+    "Project": "public/js/project.js",
+    "Task": "public/js/task.js"
+}
+
+doctype_list_js = {
+    "Project": "public/js/project_list.js"
 }
 
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
@@ -147,6 +152,11 @@ doctype_js = {
 # 		"on_trash": "method"
 # 	}
 # }
+doc_events = {
+    "Task" : {"before_save":"realty_reflex.overrides.task.before_save",
+              "validate":"realty_reflex.overrides.task.validate"},
+
+}
 
 # Scheduled Tasks
 # ---------------
