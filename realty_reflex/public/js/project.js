@@ -270,3 +270,38 @@ ${contact.email_ids && contact.email_ids.length > 0
         frm.set_value(contact_details_field, '');
     }
 }
+
+
+
+
+
+frappe.ui.form.on('Project', {
+
+    refresh: function (frm) {
+      if (frm.doc.__islocal) {
+        return;
+      }
+      setTimeout(function() {
+        frm.remove_custom_button('Create tower');
+
+      // Add custom button only after the form has been saved
+      frm.add_custom_button('Create Sub-Project', function () {
+        // Fetch the unit name from the current Unit document
+        var project_name = frm.doc.name;
+        console.log(project_name, "project_name");
+        frappe.new_doc('Sub Project', {
+          'project': project_name
+        });
+      },'Create');
+      frm.add_custom_button('Create tower', function () {
+        // Fetch the unit name from the current Unit document
+        var project_name = frm.doc.name;
+        console.log(project_name, "project_name");
+        frappe.new_doc('Tower', {
+          'project_name': project_name
+        });
+      }, 'Create');
+    }, 300); 
+      
+    }
+  });
