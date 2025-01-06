@@ -7,13 +7,10 @@
  "document_type": "Setup",
  "engine": "InnoDB",
  "field_order": [
-  "subject",
   "project",
   "issue",
   "type",
   "color",
-  "is_group",
-  "is_template",
   "column_break0",
   "status",
   "priority",
@@ -58,16 +55,6 @@
  "fields": [
   {
    "allow_in_quick_entry": 1,
-   "fieldname": "subject",
-   "fieldtype": "Data",
-   "in_global_search": 1,
-   "in_standard_filter": 1,
-   "label": "Subject",
-   "reqd": 1,
-   "search_index": 1
-  },
-  {
-   "allow_in_quick_entry": 1,
    "bold": 1,
    "fieldname": "project",
    "fieldtype": "Link",
@@ -97,20 +84,6 @@
    "fieldname": "color",
    "fieldtype": "Color",
    "label": "Color"
-  },
-  {
-   "bold": 1,
-   "default": "0",
-   "fieldname": "is_group",
-   "fieldtype": "Check",
-   "in_list_view": 1,
-   "label": "Is Group"
-  },
-  {
-   "default": "0",
-   "fieldname": "is_template",
-   "fieldtype": "Check",
-   "label": "Is Template"
   },
   {
    "fieldname": "column_break0",
@@ -398,7 +371,7 @@
  "is_tree": 1,
  "links": [],
  "max_attachments": 5,
- "modified": "2025-01-03 01:31:05.025546",
+ "modified": "2025-01-06 19:19:26.712721",
  "modified_by": "Administrator",
  "module": "Realty Reflex",
  "name": "Sub Project",
@@ -419,14 +392,12 @@
   }
  ],
  "quick_entry": 1,
- "search_fields": "subject",
  "show_name_in_global_search": 1,
  "show_preview_popup": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
  "timeline_field": "project",
- "title_field": "subject",
  "track_changes": 1,
  "track_seen": 1
 }
