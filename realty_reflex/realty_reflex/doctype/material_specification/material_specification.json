@@ -1,0 +1,75 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-01-08 16:30:25.094907",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "material_category_id",
+  "material_category",
+  "unit",
+  "column_break_lvfy",
+  "qty",
+  "rate",
+  "amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "material_category_id",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Material Category ID",
+   "options": "Item"
+  },
+  {
+   "fetch_from": "material_category_id.item_name",
+   "fieldname": "material_category",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Material Category"
+  },
+  {
+   "fetch_from": "material_category_id.stock_uom",
+   "fieldname": "unit",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Unit",
+   "options": "UOM"
+  },
+  {
+   "fieldname": "qty",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Qty"
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Rate"
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Amount"
+  },
+  {
+   "fieldname": "column_break_lvfy",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-01-08 19:35:09.055872",
+ "modified_by": "Administrator",
+ "module": "Realty Reflex",
+ "name": "Material Specification",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

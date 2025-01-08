@@ -25,8 +25,11 @@ app_license = "mit"
 # ------------------
 
 # include js, css files in header of desk.html
-# app_include_css = "/assets/realty_reflex/css/realty_reflex.css"
-app_include_js = "/assets/realty_reflex/js/custom_navbar.js"
+# app_include_css = "/assets/realty_reflex/css/material_grid.css"
+app_include_js = [
+    "/assets/realty_reflex/js/custom_navbar.js",
+    # "/assets/realty_reflex/js/material_gridd.js"
+    ]
 
 # include js, css files in header of web template
 # web_include_css = "/assets/realty_reflex/css/realty_reflex.css"
