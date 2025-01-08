@@ -1,73 +1,57 @@
 frappe.listview_settings['Project'] = {
     add_fields: ["name", "project_name"],
-    
-    button: 
-        {
-            show(doc) {
-                return doc.name;  // Show button for all projects
-            },
-            get_label() {
-                return 'View Sub-Project';
-            },
-            get_description(doc) {
-                return __('View Sub-Projects for {0}', [doc.name]);
-            },
-            action(doc) {
-                // Route to Sub Project list view with project filter
-                frappe.set_route('List', 'Sub Project', {
-                    'project': doc.name
-                });
-            }
+
+    button: {
+        show(doc) {
+            // Show the button for all projects
+            return !!doc.name; // Ensures the button only appears if a project exists
         },
-        // {
-        //     show(doc) {
-        //         return doc.name;  // Show button for all projects
-        //     },
-        //     get_label() {
-        //         return 'View WBS';
-        //     },
-        //     get_description(doc) {
-        //         return __('View WBS for {0}', [doc.name]);
-        //     },
-        //     action(doc) {
-        //         // Route to WBS list view with project filter
-        //         frappe.set_route('List', 'WBS', {
-        //             'project': doc.name
-        //         });
-        //     }
-        // }
-    
+        get_label() {
+            // Provide a label for the button
+            return __('Actions');
+        },
+        get_description(doc) {
+            // Provide a description for the button
+            return __('Perform actions for Project {0}', [doc.name]);
+        },
+        action(doc) {
+            // Define multiple buttons programmatically using a custom dialog
+            const dialog = new frappe.ui.Dialog({
+                title: __('Actions for {0}', [doc.name]),
+                fields: [
+                    {
+                        fieldname: 'actions',
+                        fieldtype: 'HTML',
+                        options: `
+                            <div>
+                                <button class="btn btn-primary btn-view-sub-project" style="margin-right: 10px;">
+                                    ${__('View Sub-Projects')}
+                                </button>
+                                <button class="btn btn-primary btn-view-wbs">
+                                    ${__('View WBS')}
+                                </button>
+                            </div>
+                        `
+                    }
+                ]
+            });
+
+            dialog.show();
+
+            // Add event listeners for the buttons
+            dialog.$wrapper.find('.btn-view-sub-project').on('click', () => {
+                dialog.hide();
+                frappe.set_route('List', 'Sub Project', {
+                    project: doc.name
+                });
+            });
+
+            dialog.$wrapper.find('.btn-view-wbs').on('click', () => {
+                dialog.hide();
+                // frappe.set_route('List', 'Task', {
+                //     project: doc.name
+                // });
+            });
+        }
+    }
 };
-
-    // Optional: Add indicator colors based on status
-    // get_indicator: function(doc) {
-    //     return [__(doc.status), {
-    //         'Planning': 'blue',
-    //         'Budgeting': 'orange',
-    //         'Construction': 'green'
-    //     }[doc.status], 'status,=,' + doc.status];
-    // },
-
-    // You can also add an action button in the menu for all selected items
-//     onload: function(listview) {
-//         listview.page.add_action_item(__('View Sub-Projects'), function() {
-//             const selected_docs = listview.get_checked_items();
-            
-//             if (selected_docs.length === 0) {
-//                 frappe.msgprint(__('Please select at least one Project'));
-//                 return;
-//             }
-            
-//             if (selected_docs.length > 1) {
-//                 frappe.msgprint(__('Please select only one Project'));
-//                 return;
-//             }
-
-//             // Route to Sub Project list with filter
-//             frappe.set_route('List', 'Sub Project', {
-//                 'project': selected_docs[0].name
-//             });
-//         });
-//     }
-// };
-
