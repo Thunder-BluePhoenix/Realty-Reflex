@@ -1,0 +1,94 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-01-08 16:10:50.785177",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "service_item",
+  "unit",
+  "qty",
+  "column_break_qjxo",
+  "service_total",
+  "material_total",
+  "rate",
+  "section_break_ilax",
+  "service_item_material_specific_to_single_quantity",
+  "section_break_fwqg",
+  "item_total"
+ ],
+ "fields": [
+  {
+   "fieldname": "service_item",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Service Item",
+   "options": "Item"
+  },
+  {
+   "fieldname": "unit",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Unit",
+   "options": "UOM"
+  },
+  {
+   "fieldname": "qty",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Qty"
+  },
+  {
+   "fieldname": "column_break_qjxo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "service_total",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Service total"
+  },
+  {
+   "fieldname": "material_total",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Material Total"
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Float",
+   "label": "Rate"
+  },
+  {
+   "fieldname": "section_break_ilax",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "service_item_material_specific_to_single_quantity",
+   "fieldtype": "HTML",
+   "label": "Service Item Material Specific to single Quantity"
+  },
+  {
+   "fieldname": "section_break_fwqg",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "item_total",
+   "fieldtype": "Float",
+   "label": "Item Total"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-01-08 16:19:34.999162",
+ "modified_by": "Administrator",
+ "module": "Realty Reflex",
+ "name": "Service Specification",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
