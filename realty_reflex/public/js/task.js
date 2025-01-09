@@ -412,10 +412,26 @@ frappe.ui.form.on('Task', {
         }
 
         function openEditDialog(service_item, unit, qty, service_total, material_total, rate, material_specification = [], item_total = 0) {
+
+            const rowId = $('#service-spec-table-body tr').has('.edit-row:focus').find('.serial-no').text() ||
+                        $('#service-spec-table-body tr').last().find('.serial-no').text();
+
             const dialog = new frappe.ui.Dialog({
-                title: "Edit Service Specification",
+                title: `<div style="margin-bottom: 15px;">
+                            <h4 style="margin: 0; padding: 0;">Edit Service Specification</h4>
+                            <div style="font-size: 14px; margin-top: 5px;">Editing Row: ${rowId}</div>
+                        </div>`,
                 size: "large",
                 fields: [
+                //     {
+                //         fieldtype: 'HTML',
+                //         fieldname: 'title_with_row',
+                //         options: `<div style="margin-bottom: 15px;">
+                //             <h4 style="margin: 0; padding: 0;">Edit Service Specification</h4>
+                //             <div style="font-size: 14px; margin-top: 5px;">Editing Row: ${rowId}</div>
+                //         </div>`
+                //    },
+
                     {
                         fieldtype: 'Section Break',
                         label: 'Service Item Details',
