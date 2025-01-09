@@ -2,7 +2,7 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 import json
-
+from frappe.utils import now_datetime
 
 
 
@@ -21,21 +21,21 @@ def before_save(doc, method = None):
             doc.custom_pending_amount =  amo - allocated_amo
 
     data_long_text(doc, method)
+    update_revision(doc, method = None)
 
 
-def validate(doc, method = None):
-# Store previous values in cache for comparison
-    if not hasattr(doc, '_previous_values'):
-        doc._previous_values = frappe._dict({
-            'custom_remark': doc.get_doc_before_save().custom_remark if doc.get_doc_before_save() else None,
-            'custom_allocated_amount': doc.get_doc_before_save().custom_allocated_amount if doc.get_doc_before_save() else None,
-            'custom_rate': doc.get_doc_before_save().custom_rate if doc.get_doc_before_save() else None,
-            'custom_budget_type': doc.get_doc_before_save().custom_budget_type if doc.get_doc_before_save() else None,
-            'custom_builtup_area':doc.get_doc_before_save().custom_builtup_area if doc.get_doc_before_save() else None,
-            'custom_attach': doc.get_doc_before_save().custom_attach if doc.get_doc_before_save() else None
+def on_update(doc, method = None):
+	# Collect data from specified fields
+		data_to_store = {
+			"custom_remark": doc.custom_remark or None,
+            "custom_allocated_amount": doc.custom_allocated_amount or None,
+            "custom_rate": doc.custom_rate or None,
+            "custom_budget_type": doc.custom_budget_type or None,
+            "custom_builtup_area": doc.custom_builtup_area or None,
+		}
 
-    })
-        
+		# Join the data into a single long text string
+		doc.custom_validate_data = json.dumps(data_to_store)
 
 
 
@@ -100,3 +100,80 @@ def data_long_text(doc, method):
     doc.custom_total_material_inr = total_material_inr
 
 
+
+
+
+def update_revision(doc, method = None):
+	# Parse the existing JSON data stored in `custom_validate_data`
+	stored_data = json.loads(doc.custom_validate_data) if doc.custom_validate_data else {}
+
+	# Prepare current field values
+	current_values = {
+		"custom_remark": doc.custom_remark,
+		"custom_allocated_amount": doc.custom_allocated_amount,
+		"custom_rate": doc.custom_rate,
+		"custom_budget_type": doc.custom_budget_type,
+		"custom_builtup_area": doc.custom_builtup_area
+	}
+
+	# Compare stored data with current data
+	if current_values != stored_data:
+		# Add a new row in the `custom_revisions` child table if data has changed
+		revision_row = doc.append("custom_revisions", {})
+		revision_row.date_and_time = now_datetime()
+		revision_row.budget_type = doc.custom_budget_type
+		revision_row.remark = doc.custom_remark
+		revision_row.rate = doc.custom_rate
+		revision_row.trans_amount = doc.custom_allocated_amount
+		revision_row.built_up_area = doc.custom_builtup_area
+		revision_row.entered_by = frappe.session.user
+		revision_row.attachment = getattr(doc, "custom_attach", None)
+		revision_row.status = "Pending"  # Default status
+
+		budget_type = doc.custom_budget_type
+		if budget_type == "Concept Budget":
+			revision_prefix = "R0"
+		elif budget_type == "Design Budget":
+			revision_prefix = "R1"
+		elif budget_type == "GFC":
+			revision_prefix = "R2"
+		else:
+			revision_prefix = "REV"  # Default to "REV" if no match
+
+		# Calculate and set the revision number with the appropriate prefix
+		revision_count = len(doc.custom_revisions or [])
+		revision_row.revision = f"{revision_prefix}-{str(revision_count).zfill(3)}"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@frappe.whitelist()
+def get_item_group_details(item_group_id):
+    """Fetch custom fields from the Item Group doctype."""
+    if not item_group_id:
+        frappe.throw(_("Item Group ID is required"))
+
+    data = frappe.db.get_value(
+        "Item Group",
+        item_group_id,
+        ["custom_material_category_id", "custom_unit"],
+        as_dict=True
+    )
+    
+    if not data:
+        frappe.throw(_("No data found for the given Item Group"))
+
+    return data

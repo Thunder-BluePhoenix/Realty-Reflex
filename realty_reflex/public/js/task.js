@@ -1,58 +1,3 @@
-frappe.ui.form.on('Task', {
-    validate: function(frm) {
-        // Get the current field values
-        let current_values = {
-            remark: frm.doc.custom_remark,
-            allocated_amount: frm.doc.custom_allocated_amount,
-            rate: frm.doc.custom_rate,
-            budget_type: frm.doc.custom_budget_type,
-            builtup_area: frm.doc.custom_builtup_area,
-            attachment: frm.doc.custom_attach
-        };
-
-        // Get the previous values (stored in the __previous_values property)
-        let previous_values = frm.__previous_values || {};
-
-        // Check if any of the tracked fields have changed
-        let has_changes = false;
-        for (let field in current_values) {
-            if (current_values[field] !== previous_values[field]) {
-                has_changes = true;
-                break;
-            }
-        }
-        let allocated_amo = frm.doc.custom_allocated_amount;
-        let amo = frm.doc.custom_total_budget_allocated;
-
-        // If there are changes, add a new revision row
-
-        if (has_changes && allocated_amo <= amo) {
-            // Create a new row in the custom_revisions table
-            let new_row = frm.add_child('custom_revisions');
-            
-            // Set the values for the new row
-            new_row.date_and_time = frappe.datetime.now_datetime();
-            new_row.budget_type = frm.doc.custom_budget_type;
-            new_row.remark = frm.doc.custom_remark;
-            new_row.rate = frm.doc.custom_rate;
-            new_row.trans_amount = frm.doc.custom_allocated_amount;
-            new_row.built_up_area = frm.doc.custom_builtup_area;
-            new_row.entered_by = frappe.session.user_fullname;
-            new_row.attachment = frm.doc.custom_attach;
-            new_row.status = 'Pending';  // Default status
-
-            let revision_count = (frm.doc.custom_revisions || []).length;
-            new_row.revision = `REV-${String(revision_count + 1).padStart(3, '0')}`;
-
-            
-            // Store current values as previous values for next comparison
-            frm.__previous_values = {...current_values};
-            
-            // Refresh the child table
-            frm.refresh_field('custom_revisions');
-        }
-    }
-});
 
 // Handle status change in child table rows
 frappe.ui.form.on('Task Revisions', {
@@ -313,7 +258,20 @@ frappe.ui.form.on('Task', {
                                 options: 'Item',
                                 value: value,
                                 onchange: () => {
-                                    $cell.data('value', control.get_value());
+                                    let serviceItem = control.get_value();
+                                    $cell.data('value', serviceItem);
+        
+                                    // Fetch the stock_uom from the Item document
+                                    if (serviceItem) {
+                                        frappe.db.get_value('Item', serviceItem, 'stock_uom', (r) => {
+                                            if (r && r.stock_uom) {
+                                                let unitCell = $cell.closest('tr').find('.unit-link');
+                                                if (unitCell.length && unitCell.data('control')) {
+                                                    unitCell.data('control').set_value(r.stock_uom);
+                                                }
+                                            }
+                                        });
+                                    }
                                 },
                             },
                             parent: this,
@@ -323,7 +281,7 @@ frappe.ui.form.on('Task', {
                         $cell.css('margin', '0');
                     }
                 });
-
+        
                 // Initialize Unit field
                 $(this).find('.unit-link').each(function() {
                     let $cell = $(this);
@@ -343,8 +301,12 @@ frappe.ui.form.on('Task', {
                         });
                         control.set_value(value);
                         $cell.css('margin', '0');
+        
+                        // Store reference to the control for updates
+                        $cell.data('control', control);
                     }
                 });
+        
 
                 // Initialize Qty field
                 $(this).find('.qty-field').each(function() {
@@ -423,15 +385,6 @@ frappe.ui.form.on('Task', {
                         </div>`,
                 size: "large",
                 fields: [
-                //     {
-                //         fieldtype: 'HTML',
-                //         fieldname: 'title_with_row',
-                //         options: `<div style="margin-bottom: 15px;">
-                //             <h4 style="margin: 0; padding: 0;">Edit Service Specification</h4>
-                //             <div style="font-size: 14px; margin-top: 5px;">Editing Row: ${rowId}</div>
-                //         </div>`
-                //    },
-
                     {
                         fieldtype: 'Section Break',
                         label: 'Service Item Details',
@@ -442,7 +395,18 @@ frappe.ui.form.on('Task', {
                         fieldname: 'service_item',
                         options: 'Item',
                         default: service_item,
+                        onchange: function(e) {
+                            if (this.value) {
+                                frappe.db.get_value('Item', this.value, 'stock_uom')
+                                    .then(r => {
+                                        if (r && r.message) {
+                                            dialog.set_value('unit', r.message.stock_uom);
+                                        }
+                                    });
+                            }
+                        }
                     },
+
                     {
                         fieldtype: 'Float',
                         label: 'Rate',
@@ -506,8 +470,86 @@ frappe.ui.form.on('Task', {
                                 label: 'Material Category ID',
                                 fieldname: 'material_category_id',
                                 in_list_view: 1,
-                                options: 'Item',
+                                options: 'Item Group',
+                                change: function() {  // Changed from onchange to change
+                                    console.log('Material Category ID changed:', this.get_value()); // Debug log
+                                    
+                                    const field = this;
+                                    const row = field.grid_row;
+                                    const material_category_id = field.get_value();
+                                    
+                                    console.log('Current row:', row); // Debug log
+                                    console.log('Material Category ID:', material_category_id); // Debug log
+                                    
+                                    if (!material_category_id) {
+                                        console.log('No material_category_id selected'); // Debug log
+                                        return;
+                                    }
+        
+                                    // Update the row immediately to show loading
+                                    frappe.model.set_value(row.doc.doctype, row.doc.name, 'material_category', 'Loading...');
+                                    frappe.model.set_value(row.doc.doctype, row.doc.name, 'unit', 'Loading...');
+                                    
+                                    console.log('Making frappe.call...'); // Debug log
+                                    
+                                    frappe.call({
+                                        method: 'realty_reflex.overrides.task.get_item_group_details',
+                                        args: {
+                                            item_group_id: material_category_id
+                                        },
+                                        freeze: true,
+                                        callback: function(response) {
+                                            console.log('Got response:', response); // Debug log
+                                            
+                                            if (response.message) {
+                                                console.log('Setting values:', response.message); // Debug log
+                                                
+                                                // Try both ways to update the values
+                                                try {
+                                                    // Method 1: Using frappe.model.set_value
+                                                    frappe.model.set_value(row.doc.doctype, row.doc.name, {
+                                                        'material_category': response.message.custom_material_category_id || '',
+                                                        'unit': response.message.custom_unit || ''
+                                                    });
+                                                    
+                                                    // Method 2: Direct assignment
+                                                    row.doc.material_category = response.message.custom_material_category_id || '';
+                                                    row.doc.unit = response.message.custom_unit || '';
+                                                    
+                                                    // Refresh everything
+                                                    row.refresh();
+                                                    dialog.fields_dict.material_specification.grid.refresh();
+                                                    
+                                                    console.log('Values set successfully'); // Debug log
+                                                } catch (err) {
+                                                    console.error('Error setting values:', err); // Debug log
+                                                    frappe.msgprint({
+                                                        title: __('Error'),
+                                                        message: __('Error updating values: ') + err.message,
+                                                        indicator: 'red'
+                                                    });
+                                                }
+                                            } else {
+                                                console.log('No message in response'); // Debug log
+                                                frappe.msgprint({
+                                                    title: __('Error'),
+                                                    message: __('No data found for the selected Material Category ID.'),
+                                                    indicator: 'orange'
+                                                });
+                                            }
+                                        },
+                                        error: function(err) {
+                                            console.error('Server error:', err); // Debug log
+                                            frappe.msgprint({
+                                                title: __('Error'),
+                                                message: __('Failed to fetch material category details: ') + err.message,
+                                                indicator: 'red'
+                                            });
+                                        }
+                                    });
+                                }
                             },
+        
                             {
                                 fieldtype: 'Data',
                                 label: 'Material Category',
