@@ -157,7 +157,7 @@ doctype_list_js = {
 # }
 doc_events = {
     "Task" : {"before_save":"realty_reflex.overrides.task.before_save",
-              "validate":"realty_reflex.overrides.task.validate"},
+              "on_update":"realty_reflex.overrides.task.on_update"},
 
 }
 
