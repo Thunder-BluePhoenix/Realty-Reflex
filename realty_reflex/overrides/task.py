@@ -54,8 +54,8 @@ def data_long_text(doc, method):
 
     # Iterate through the parsed data for service totals
     for item in service_data:
-        total_service += item.get("service_total", 0)
-        total_material += item.get("material_total", 0)
+        total_service += float(item.get("service_total", 0) or 0)
+        total_material += float(item.get("material_total", 0) or 0)
 
     # Set the calculated totals to the respective fields
     doc.custom_service_totalinr = total_service
@@ -67,26 +67,33 @@ def data_long_text(doc, method):
     for item in service_data:
         for material in item.get("material_specification", []):
             # Create a composite key for matching
-            key = (material["material_category_id"], material["unit"], material["rate"])
+            key = (
+                material.get("material_category_id"),
+                material.get("unit"),
+                material.get("rate"),
+                material.get("material_name", "Unknown")
+            )
             existing_entry = next((m for m in material_data if (
-                m["material_category_id"] == key[0] and 
-                m["unit"] == key[1] and 
-                m["rate"] == key[2]
+                m["material_category_id"] == key[0] and
+                m["unit"] == key[1] and
+                m["rate"] == key[2] and
+                m["material_name"] == key[3]
             )), None)
 
             if existing_entry:
                 # Update quantity and amount for matching entries
-                existing_entry["qty"] += material["qty"]
+                existing_entry["qty"] += float(material.get("qty", 0))
                 existing_entry["amount"] = existing_entry["qty"] * existing_entry["rate"]
             else:
                 # Add a new entry
                 material_data.append({
-                    "material_category_id": material["material_category_id"],
-                    "material_category": material["material_category"],
-                    "unit": material["unit"],
-                    "qty": material["qty"],
-                    "rate": material["rate"],
-                    "amount": material["qty"] * material["rate"]
+                    "material_category_id": material.get("material_category_id"),
+                    "material_name": material.get("material_name", None),
+                    "material_category": material.get("material_category", None),
+                    "unit": material.get("unit", "Unknown"),
+                    "qty": float(material.get("qty", 0)),
+                    "rate": float(material.get("rate", 0)),
+                    "amount": float(material.get("qty", 0)) * float(material.get("rate", 0))
                 })
 
     # Clear existing child table and populate with updated data
@@ -98,6 +105,9 @@ def data_long_text(doc, method):
 
     # Update the total material amount field
     doc.custom_total_material_inr = total_material_inr
+
+
+
 
 
 
