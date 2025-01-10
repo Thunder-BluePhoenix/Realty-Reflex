@@ -549,6 +549,14 @@ frappe.ui.form.on('Task', {
                                     });
                                 }
                             },
+                            {
+                                fieldtype: 'Link',
+                                label: 'Material Name',
+                                fieldname: 'material_name',
+                                in_list_view: 1,
+                                options: 'Item',
+
+                            },
         
                             {
                                 fieldtype: 'Data',
@@ -575,12 +583,14 @@ frappe.ui.form.on('Task', {
                                 fieldtype: 'Float',
                                 label: 'Rate',
                                 in_list_view: 1,
+                                columns: 1,
                                 fieldname: 'rate',
                             },
                             {
                                 fieldtype: 'Float',
                                 label: 'Amount',
                                 in_list_view: 1,
+                                columns: 1,
                                 fieldname: 'amount',
                                 read_only: 1,
                             },
