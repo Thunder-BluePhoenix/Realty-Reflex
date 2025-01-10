@@ -4,7 +4,7 @@
 import frappe
 from frappe.utils.nestedset import NestedSet
 from frappe.model.document import Document
-from frappe.utils import money_in_words
+from frappe.utils import flt, money_in_words
 import json
 from frappe.utils import now_datetime
 
@@ -22,28 +22,53 @@ class SubProject(Document):
 		if self.custom_total_budget_allocated and self.custom_allocated_amount:
 			allocated_amo = self.custom_allocated_amount
 			amo = self.custom_total_budget_allocated
-			self.custom_amount_in_word = money_in_words(self.custom_total_budget_allocated)
 			if allocated_amo > amo:
 				frappe.throw("Allocated Ammount can not be greater than Total Amount")
 			else:
 				self.custom_pending_amount =  amo - allocated_amo
-
+		self.total_parking_and_unit()
 
 		update_revision(self, method = None)
+		if self.custom_total_budget_allocated:
+			val=self.number_to_words(self.custom_total_budget_allocated)
+			self.custom_amount_in_word=val
+		if self.custom_no_of_floors:
+			self.get_floor()
+
+	def get_floor(self):
+		self.custom_floors_table=[]
+		floors=frappe.db.get_all("Floors",{"floor":["<=",self.custom_no_of_floors]},["name"],order_by='floor asc')
+		for j in floors:
+			self.append("custom_floors_table",{
+				"floors":j.get("name")
+			})
+		
+	def number_to_words(self,num):
+		crore = num // 10**7
+		lakh = (num % 10**7) // 10**5
+		thousand = (num % 10**5) // 10**3
+		
+		result = []
+		if crore > 0:
+			result.append(f"{crore} cr")
+		if lakh > 0:
+			result.append(f"{lakh} lakh")
+		if thousand > 0:
+			result.append(f"{thousand} thousand")
+		
+		return " ".join(result)
 
 
-	# def validate(self):
-    # # Store previous values in cache for comparison
-	# 	if not hasattr(self, '_previous_values'):
-	# 		self._previous_values = frappe._dict({
-	# 			'custom_remark': self.get_doc_before_save().custom_remark if self.get_doc_before_save() else None,
-	# 			'custom_allocated_amount': self.get_doc_before_save().custom_allocated_amount if self.get_doc_before_save() else None,
-	# 			'custom_rate': self.get_doc_before_save().custom_rate if self.get_doc_before_save() else None,
-	# 			'custom_budget_type': self.get_doc_before_save().custom_budget_type if self.get_doc_before_save() else None,
-	# 			'custom_builtup_area':self.get_doc_before_save().custom_builtup_area if self.get_doc_before_save() else None,
-	# 			# 'custom_attach': self.get_doc_before_save().custom_attach if self.get_doc_before_save() else None
+	def total_parking_and_unit(self):
+		qty=0
+		parking=0
+		for i in self.custom_unit_type:
+			qty+=flt(i.qty)
+			parking+=flt(i.mandatory_car_park)
+		self.custom_total_saleable_units=qty
+		self.custom_no_of_car_parks=parking
 
-    #     })
+			
 
 	def on_update(self, method = None):
 	# Collect data from specified fields

@@ -19,7 +19,16 @@ frappe.ui.form.on('Sub Project', {
         // Remove add/delete buttons from the grid
         frm.set_df_property('custom_revisions', 'cannot_add_rows', true);
         frm.set_df_property('custom_revisions', 'cannot_delete_rows', true);
-    }
+        frm.add_custom_button(
+            __("Unit"),
+            function () {
+              var tower_code = frm.doc.tower_code;
+              frappe.set_route("List", "Unit", {"sub_project": tower_code});
+            },
+            __("View")
+          );
+    },
+    
 });
 
 // Additional handling for child table
