@@ -554,7 +554,6 @@ frappe.ui.form.on('Task', {
                                 label: 'Material Name',
                                 fieldname: 'material_name',
                                 in_list_view: 1,
-                                columns: 1,
                                 options: 'Item',
 
                             },
