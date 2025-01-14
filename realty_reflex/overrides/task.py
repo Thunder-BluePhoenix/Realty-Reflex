@@ -21,7 +21,7 @@ def before_save(doc, method = None):
             doc.custom_pending_amount =  amo - allocated_amo
 
     data_long_text(doc, method)
-    update_revision(doc, method = None)
+    # update_revision(doc, method = None)
 
 
 def on_update(doc, method = None):
