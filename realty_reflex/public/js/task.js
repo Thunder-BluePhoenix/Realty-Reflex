@@ -70,63 +70,81 @@ frappe.ui.form.on('Task Revisions', {
 // })
 frappe.ui.form.on('Task', {
     refresh: function (frm) {
-        // Create the initial table structure with editable fields
         const alignment_css = `
-             <style>
-        #service-spec-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 10px;
-        }
+            <style>
+       #service-spec-table {
+           width: 100%;
+           border-collapse: collapse;
+           margin-bottom: 10px;
+       }
 
-        #service-spec-table th, #service-spec-table td {
-            text-align: left;
-            vertical-align: middle;
-            border: 1px solid #ddd; /* Match Frappe table border style */
-            padding: 8px; /* Match standard table padding */
-        }
+       #service-spec-table th, #service-spec-table td {
+           text-align: left;
+           vertical-align: middle;
+           border: 1px solid #ddd;
+           padding: 8px;
+       }
 
-        #service-spec-table th {
-            background-color: #f9f9f9; /* Match Frappe table header background */
-            font-weight: bold;
-            text-transform: capitalize;
-        }
+       #service-spec-table th {
+           background-color: #f9f9f9;
+           font-weight: bold;
+           text-transform: capitalize;
+       }
 
-       
+       /* Adjust column widths */
+       #service-spec-table th:nth-child(4), /* Unit column */
+       #service-spec-table td:nth-child(4) {
+           width: 8%;
+       }
 
-        #service-spec-table td .frappe-control {
-            margin: auto !important;
-            width: 100% !important;
-        }
+       #service-spec-table th:nth-child(5), /* Qty column */
+       #service-spec-table td:nth-child(5) {
+           width: 8%;
+       }
 
-        #service-spec-table .select-row {
-            margin: auto !important;
-            display: block;
-        }
+       #service-spec-table th:nth-child(8), /* Total column */
+       #service-spec-table td:nth-child(8) {
+           width: 15%;
+           font-weight: bold;
+       }
 
-        #service-spec-table .edit-row {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 30px;
-            height: 30px;
-            margin: auto;
-        }
+       #service-spec-table td .frappe-control {
+           margin: auto !important;
+           width: 100% !important;
+       }
 
-        #service-spec-table .edit-row i {
-            font-size: 16px;
-        }
+       /* Make total field text bigger */
+       #service-spec-table td:nth-child(8) input {
+           font-size: 1.1em;
+           font-weight: bold;
+       }
 
-        #add-row-btn, #delete-row-btn {
-            margin-top: 1px;
-        }
-    </style>
+       #service-spec-table .select-row {
+           margin: auto !important;
+           display: block;
+       }
 
-        `;
+       #service-spec-table .edit-row {
+           display: flex;
+           justify-content: center;
+           align-items: center;
+           width: 30px;
+           height: 30px;
+           margin: auto;
+       }
 
-        // Inject the alignment CSS into the page
+       #service-spec-table .edit-row i {
+           font-size: 16px;
+       }
+
+       #add-row-btn, #delete-row-btn {
+           margin-top: 1px;
+       }
+   </style>`;
+
+ 
         $('head').append(alignment_css);
-
+ 
         let table_html = `
             <table class="table table-bordered" id="service-spec-table">
                 <thead>
@@ -138,6 +156,7 @@ frappe.ui.form.on('Task', {
                         <th>Qty</th>
                         <th>Service Total</th>
                         <th>Material Total</th>
+                        <th>Total</th>
                         <th>Edit</th>
                     </tr>
                 </thead>
@@ -149,33 +168,33 @@ frappe.ui.form.on('Task', {
                 <button id="delete-row-btn" class="btn btn-danger" style="display: none;">Delete Selected Row(s)</button>
             </div>
         `;
-
+ 
         frm.set_df_property('custom_service_specification_html', 'options', table_html);
-
+ 
         if (frm.doc.custom_service_specification_data) {
             populateTable(frm.doc.custom_service_specification_data);
         } else {
             addRow();
         }
-
+ 
         // Event Handlers
         setTimeout(() => {
             $('#add-row-btn').on('click', function () {
                 addRow();
                 updateSerialNumbers();
             });
-
+ 
             $('#service-spec-table').on('click', '.select-row', function () {
                 let selected = $('#service-spec-table-body').find('.select-row:checked').length;
                 $('#delete-row-btn').toggle(selected > 0);
             });
-
+ 
             $('#delete-row-btn').on('click', function () {
                 $('#service-spec-table-body').find('.select-row:checked').closest('tr').remove();
                 $('#delete-row-btn').hide();
                 updateSerialNumbers();
             });
-
+ 
             $('#service-spec-table').on('click', '.edit-row', function () {
                 let row = $(this).closest('tr');
                 openEditDialog(
@@ -184,28 +203,38 @@ frappe.ui.form.on('Task', {
                     row.find('.qty-field').data('value'),
                     row.find('.service-total-field').data('value'),
                     row.find('.material-total-field').data('value'),
+                    row.find('.total-field').data('value'),
                     row.data('rate'),
                     row.data('material_specification'),
                     row.data('item_total')
                 );
             });
         }, 500);
-
+ 
+        function updateRowTotal(row) {
+            const serviceTotal = flt(row.find('.service-total-field').data('value') || 0);
+            const materialTotal = flt(row.find('.material-total-field').data('value') || 0);
+            const total = serviceTotal + materialTotal;
+            row.find('.total-field').data('value', total)
+                .find('input').val(total);
+        }
+ 
         function addRow(data = {}) {
             let row = $(`
                 <tr>
                     <td><input type="checkbox" class="select-row"></td>
                     <td class="serial-no"></td>
-                    
                     <td><div class="service-item-link" data-value="${data.service_item || ''}"></div></td>
                     <td><div class="unit-link" data-value="${data.unit || ''}"></div></td>
                     <td><div class="qty-field" data-value="${data.qty || ''}"></div></td>
                     <td><div class="service-total-field" data-value="${data.service_total || ''}"></div></td>
                     <td><div class="material-total-field" data-value="${data.material_total || ''}"></div></td>
+                    <td><div class="total-field" data-value="${data.service_total + data.material_total || ''}"></div></td>
                     <td><button class="btn btn-light edit-row"><i class="fa fa-pencil"></i></button></td>
                 </tr>
             `);
-
+ 
+ 
             if (data.material_specification) {
                 row.data('material_specification', data.material_specification);
             }
@@ -215,12 +244,13 @@ frappe.ui.form.on('Task', {
             if (data.item_total) {
                 row.data('item_total', data.item_total);
             }
-
+ 
             $('#service-spec-table-body').append(row);
             initializeLinkFields();
             updateSerialNumbers();
+            updateRowTotal(row);
         }
-
+ 
         function populateTable(data) {
             try {
                 let table_data = JSON.parse(data);
@@ -370,10 +400,34 @@ frappe.ui.form.on('Task', {
                         $cell.css('margin', '0');
                     }
                 });
+                $(this).find('.total-field').each(function() {
+                    let $cell = $(this);
+                    if (!$cell.find('.frappe-control').length) {
+                        let value = $cell.data('value') || '';
+                        let control = frappe.ui.form.make_control({
+                            df: {
+                                fieldtype: 'Float',
+                                value: value,
+                                read_only: 1,
+                            },
+                            parent: this,
+                            render_input: true,
+                        });
+                        control.set_value(value);
+                        $cell.css('margin', '0');
+                    }
+                });
+                const $row = $(this);
+                $row.find('.service-total-field, .material-total-field').each(function() {
+                    $(this).on('change', 'input', function() {
+                        updateRowTotal($row);
+                    });
+                });
             });
         }
+ 
 
-        function openEditDialog(service_item, unit, qty, service_total, material_total, rate, material_specification = [], item_total = 0) {
+        function openEditDialog(service_item, unit, qty, service_total, material_total, total, rate, material_specification = [], item_total = 0) {
 
             const rowId = $('#service-spec-table-body tr').has('.edit-row:focus').find('.serial-no').text() ||
                         $('#service-spec-table-body tr').last().find('.serial-no').text();
@@ -460,6 +514,18 @@ frappe.ui.form.on('Task', {
                         label: '',
                     },
                     {
+                        fieldtype: 'Float',
+                        label: 'Total',
+                        fieldname: 'total',
+                        default: total,
+                        read_only: 1,
+                    },
+ 
+                    {
+                        fieldtype: 'Section Break',
+                        label: '',
+                    },
+                    {
                         fieldtype: 'Table',
                         label: 'Material Specification Table',
                         fieldname: 'material_specification',
@@ -485,11 +551,15 @@ frappe.ui.form.on('Task', {
                                         console.log('No material_category_id selected'); // Debug log
                                         return;
                                     }
+                                    if (row && row.doc) {
+                                        // frappe.model.set_value(row.doc.doctype, row.doc.name, 'material_name', '');
+                                        row.doc.material_name = '';
+                                        field.grid.refresh();
+                                    // }
         
                                     // Update the row immediately to show loading
                                     frappe.model.set_value(row.doc.doctype, row.doc.name, 'material_category', 'Loading...');
-                                    frappe.model.set_value(row.doc.doctype, row.doc.name, 'unit', 'Loading...');
-                                    
+                                    frappe.model.set_value(row.doc.doctype, row.doc.name, 'unit', 'Loading...');                                    
                                     console.log('Making frappe.call...'); // Debug log
                                     
                                     frappe.call({
@@ -517,7 +587,8 @@ frappe.ui.form.on('Task', {
                                                     row.doc.unit = response.message.custom_unit || '';
                                                     
                                                     // Refresh everything
-                                                    row.refresh();
+                                                    // row.refresh();
+                                                    field.grid.refresh();
                                                     dialog.fields_dict.material_specification.grid.refresh();
                                                     
                                                     console.log('Values set successfully'); // Debug log
@@ -548,6 +619,29 @@ frappe.ui.form.on('Task', {
                                         }
                                     });
                                 }
+
+                                    // frappe.call({
+                                    //     method: 'realty_reflex.overrides.task.get_material_names',
+                                    //     args: {
+                                    //         material_category_id: material_category_id
+                                    //     },
+                                    //     callback: function(response) {
+                                    //         if (response.message) {
+                                    //             // Store the items in the row for filtering
+                                    //             if (row && row.doc) {
+                                    //                 row.doc._available_items = response.message;
+                                    //             }
+                                    //         }
+                                    //     }
+                                    // });
+                    
+
+
+                                    // if (row && row.doc) {
+                                    //     row.doc.material_name = '';
+                                    //     field.grid.refresh();
+                                    // }
+                                }
                             },
                             {
                                 fieldtype: 'Link',
@@ -555,8 +649,20 @@ frappe.ui.form.on('Task', {
                                 fieldname: 'material_name',
                                 in_list_view: 1,
                                 options: 'Item',
-
+                                get_query: function(doc) {
+                                    // Access the material_category_id directly from the current row
+                                    const material_category_id = doc.material_category_id;
+                                    
+                                    return {
+                                        filters: {
+                                            'item_group': material_category_id || ''
+                                        }
+                                    };
+                                }
                             },
+                            
+                            
+ 
         
                             {
                                 fieldtype: 'Data',
@@ -632,14 +738,24 @@ frappe.ui.form.on('Task', {
                         .find('input').val(values.service_total);
                     selectedRow.find('.material-total-field').data('value', values.material_total)
                         .find('input').val(values.material_total);
+                    
+                        
+                    const total = flt(values.service_total) + flt(values.material_total);
+                    selectedRow.find('.total-field').data('value', total)
+                        .find('input').val(total);
+     
+ 
 
                     selectedRow.data('material_specification', values.material_specification);
                     selectedRow.data('rate', values.rate);
                     selectedRow.data('item_total', values.item_total);
 
+                    updateRowTotal(selectedRow);
                     dialog.hide();
                 }
             });
+            
+ 
 
             function calculateAmount(row) {
                 const qty = flt(row.qty || 0);
@@ -663,12 +779,19 @@ frappe.ui.form.on('Task', {
                 // Calculate material total (item_total * parent qty)
                 const parent_qty = flt(dialog.get_value('qty') || 0);
                 dialog.set_value('material_total', total_amount * parent_qty);
+
+                const service_total = flt(dialog.get_value('service_total') || 0);
+                dialog.set_value('total', service_total + material_total);
+
             }
 
             function updateServiceTotal(dialog) {
                 const rate = flt(dialog.get_value('rate') || 0);
                 const qty = flt(dialog.get_value('qty') || 0);
                 dialog.set_value('service_total', rate * qty);
+                const material_total = flt(dialog.get_value('material_total') || 0);
+                dialog.set_value('total', service_total + material_total);
+
             }
 
             // Bind events for child table calculations
@@ -699,6 +822,8 @@ frappe.ui.form.on('Task', {
                     qty: $(this).find('.qty-field').data('value') || '',
                     service_total: $(this).find('.service-total-field').data('value') || '',
                     material_total: $(this).find('.material-total-field').data('value') || '',
+                    total: $(this).find('.total-field').data('value') || '',
+
                     material_specification: $(this).data('material_specification') || [],
                     rate: $(this).data('rate') || 0,
                     item_total: $(this).data('item_total') || 0
