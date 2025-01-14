@@ -28,7 +28,7 @@ class SubProject(Document):
 				self.custom_pending_amount =  amo - allocated_amo
 		self.total_parking_and_unit()
 
-		update_revision(self, method = None)
+		# update_revision(self, method = None)
 		if self.custom_total_budget_allocated:
 			val=self.number_to_words(self.custom_total_budget_allocated)
 			self.custom_amount_in_word=val
