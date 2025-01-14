@@ -275,33 +275,92 @@ ${contact.email_ids && contact.email_ids.length > 0
 
 
 
-frappe.ui.form.on('Project', {
+// frappe.ui.form.on('Project', {
 
+//     refresh: function (frm) {
+//       if (frm.doc.__islocal) {
+//         return;
+//       }
+//       setTimeout(function() {
+//         frm.remove_custom_button('Create tower');
+
+//       // Add custom button only after the form has been saved
+//       frm.add_custom_button('Create Sub-Project', function () {
+//         // Fetch the unit name from the current Unit document
+//         var project_name = frm.doc.name;
+//         console.log(project_name, "project_name");
+//         frappe.new_doc('Sub Project', {
+//           'project': project_name
+//         });
+//       },'Create');
+//       frm.add_custom_button('Create tower', function () {
+//         // Fetch the unit name from the current Unit document
+//         var project_name = frm.doc.name;
+//         console.log(project_name, "project_name");
+//         frappe.new_doc('Tower', {
+//           'project_name': project_name
+//         });
+//       }, 'Create');
+//     }, 300); 
+      
+//     }
+//   });
+
+
+
+
+frappe.ui.form.on('Project', {
     refresh: function (frm) {
       if (frm.doc.__islocal) {
         return;
       }
-      setTimeout(function() {
+      setTimeout(function () {
+        // Remove existing custom buttons
         frm.remove_custom_button('Create tower');
-
-      // Add custom button only after the form has been saved
-      frm.add_custom_button('Create Sub-Project', function () {
-        // Fetch the unit name from the current Unit document
-        var project_name = frm.doc.name;
-        console.log(project_name, "project_name");
-        frappe.new_doc('Sub Project', {
-          'project': project_name
+        frm.remove_custom_button('Tower', 'View');
+        frm.remove_custom_button('Stock', 'View');
+  
+  
+        // Add custom button to create a Sub-Project
+        frm.add_custom_button('Create Sub-Project', function () {
+          var project_name = frm.doc.name;
+          console.log(project_name, "project_name");
+          frappe.new_doc('Sub Project', {
+            'project': project_name
+          });
         });
-      },'Create');
-      frm.add_custom_button('Create tower', function () {
-        // Fetch the unit name from the current Unit document
-        var project_name = frm.doc.name;
-        console.log(project_name, "project_name");
-        frappe.new_doc('Tower', {
-          'project_name': project_name
-        });
-      }, 'Create');
-    }, 300); 
-      
+  
+  
+        // Add buttons under the "View" group
+        frm.add_custom_button('Sub Projects', function () {
+          // Update custom filter in frappe.project_selector
+        //   frappe.project_selector.current_project = frm.doc.name;
+  
+  
+          // Navigate to Sub Project list with filter
+          frappe.set_route('List', 'Sub Project', {
+            // project: frm.doc.name
+          });
+        }, 'View');
+  
+  
+        frm.add_custom_button('Units', function () {
+          // Update custom filter in frappe.project_selector
+        //   frappe.project_selector.current_project = frm.doc.name;
+  
+  
+          // Navigate to Unit list with filter
+          frappe.set_route('List', 'Unit', {
+            // project_name: frm.doc.name
+          });
+        }, 'View');
+      }, 300);
     }
   });
+  
+  
+  
+  
+  
+  
+  
