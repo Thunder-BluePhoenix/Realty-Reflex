@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe import _
 from frappe.utils.nestedset import NestedSet
 from frappe.model.document import Document
 from frappe.utils import flt, money_in_words
@@ -82,6 +83,18 @@ class SubProject(Document):
 
 		# Join the data into a single long text string
 		self.custom_validate_data = json.dumps(data_to_store)
+
+
+	
+
+	def validate(self, method = None):
+		# Check for duplicates
+		duplicate = frappe.db.exists("Sub Project", {
+			"custom_subproject_name": self.custom_subproject_name
+		})
+
+		if duplicate and duplicate != self.name:
+			frappe.throw(_("A Sub Project with the name '{0}' already exists.").format(self.custom_subproject_name))
 
 
 
