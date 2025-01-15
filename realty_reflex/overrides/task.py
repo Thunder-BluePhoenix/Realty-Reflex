@@ -20,7 +20,7 @@ def before_save(doc, method = None):
         else:
             doc.custom_pending_amount =  amo - allocated_amo
 
-    # data_long_text(doc, method)
+    data_long_text(doc, method)
     # update_revision(doc, method = None)
 
 
@@ -187,3 +187,21 @@ def get_item_group_details(item_group_id):
         frappe.throw(_("No data found for the given Item Group"))
 
     return data
+
+
+
+@frappe.whitelist()
+def get_items_by_item_group(item_group_id):
+    if not item_group_id:
+        return []
+    # Fetch items linked to the selected Item Group
+    items = frappe.get_all(
+        "Item",
+        filters={"item_group": item_group_id},
+        fields=["name"]
+    )
+    return [item.name for item in items]
+
+
+
+

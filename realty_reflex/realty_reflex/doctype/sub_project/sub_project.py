@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe import _
 from frappe.utils.nestedset import NestedSet
 from frappe.model.document import Document
 from frappe.utils import flt, money_in_words
@@ -28,7 +29,7 @@ class SubProject(Document):
 				self.custom_pending_amount =  amo - allocated_amo
 		self.total_parking_and_unit()
 
-		update_revision(self, method = None)
+		# update_revision(self, method = None)
 		if self.custom_total_budget_allocated:
 			val=self.number_to_words(self.custom_total_budget_allocated)
 			self.custom_amount_in_word=val
@@ -82,6 +83,18 @@ class SubProject(Document):
 
 		# Join the data into a single long text string
 		self.custom_validate_data = json.dumps(data_to_store)
+
+
+	
+
+	def validate(self, method = None):
+		# Check for duplicates
+		duplicate = frappe.db.exists("Sub Project", {
+			"custom_subproject_name": self.custom_subproject_name
+		})
+
+		if duplicate and duplicate != self.name:
+			frappe.throw(_("A Sub Project with the name '{0}' already exists.").format(self.custom_subproject_name))
 
 
 

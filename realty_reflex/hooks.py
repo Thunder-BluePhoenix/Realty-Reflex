@@ -48,7 +48,8 @@ app_include_js = [
 # include js in doctype views
 doctype_js = {
     "Project": "public/js/project.js",
-    "Task": "public/js/task.js"
+    "Task": "public/js/task.js",
+    "Unit": "public/js/unit.js"
 }
 
 doctype_list_js = {
@@ -158,6 +159,9 @@ doctype_tree_js = {"Task" : "public/js/wbss.js"}
 doc_events = {
     "Task" : {"before_save":"realty_reflex.overrides.task.before_save",
               "on_update":"realty_reflex.overrides.task.on_update"},
+
+    "Project": {"onload":"realty_reflex.overrides.project.onload",
+                "on_trash":"realty_reflex.overrides.project.on_trash"}
 
 }
 

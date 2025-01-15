@@ -50,7 +50,9 @@
   "lft",
   "rgt",
   "old_parent",
-  "template_task"
+  "template_task",
+  "stock_tab",
+  "custom_release_hold_html"
  ],
  "fields": [
   {
@@ -365,13 +367,23 @@
    "fieldtype": "Data",
    "hidden": 1,
    "label": "Template Task"
+  },
+  {
+   "fieldname": "stock_tab",
+   "fieldtype": "Tab Break",
+   "label": "Stock"
+  },
+  {
+   "fieldname": "custom_release_hold_html",
+   "fieldtype": "HTML",
+   "label": "Release hold html"
   }
  ],
  "icon": "fa fa-check",
  "is_tree": 1,
  "links": [],
  "max_attachments": 5,
- "modified": "2025-01-06 19:19:26.712721",
+ "modified": "2025-01-14 18:17:29.809794",
  "modified_by": "Administrator",
  "module": "Realty Reflex",
  "name": "Sub Project",
