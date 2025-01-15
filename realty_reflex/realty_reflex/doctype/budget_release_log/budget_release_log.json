@@ -5,17 +5,26 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "section_break_rpnv"
+  "project",
+  "task_dict"
  ],
  "fields": [
   {
-   "fieldname": "section_break_rpnv",
-   "fieldtype": "Section Break"
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "Project"
+  },
+  {
+   "fieldname": "task_dict",
+   "fieldtype": "Text",
+   "label": "Task Dict",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-15 17:23:55.557101",
+ "modified": "2025-01-15 21:29:06.753307",
  "modified_by": "Administrator",
  "module": "Realty Reflex",
  "name": "Budget Release Log",
