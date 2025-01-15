@@ -16,7 +16,7 @@ def before_save(doc, method = None):
         amo = doc.custom_total_budget_allocated
         doc.custom_amount = doc.custom_total_budget_allocated
         if allocated_amo > amo:
-            frappe.throw("Allocated Ammount can not be greater than Total Amount")
+            frappe.throw("Allocated Amount can not be greater than Total Amount")
         else:
             doc.custom_pending_amount =  amo - allocated_amo
 
@@ -36,6 +36,8 @@ def on_update(doc, method = None):
 
 		# Join the data into a single long text string
 		doc.custom_validate_data = json.dumps(data_to_store)
+          
+          
 
 
 
@@ -161,6 +163,20 @@ def update_revision(doc, method = None):
 
 
 
+def allocated_amount_validation(self, method=None):
+    if self.parent_task:
+
+        parent_task = frappe.get_doc('Task', self.parent_task)
+
+        child_tasks = frappe.get_all(
+            'Task',
+            filters={'parent_task': self.parent_task},
+            fields=['custom_total_budget_allocated']
+        )
+
+        total_allocated = sum(task.get('custom_total_budget_allocated', 0) for task in child_tasks)
+        parent_task.custom_allocated_amount = total_allocated
+        parent_task.save()
 
 
 
