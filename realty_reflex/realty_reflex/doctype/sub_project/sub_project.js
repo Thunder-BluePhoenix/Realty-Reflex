@@ -168,7 +168,7 @@ frappe.ui.form.on('Sub Project', {
 
             /* Upload CSV button */
             .upload-csv-btn {
-                background-color: #4F46E5;
+                background-color: #1E90FF;
                 color: white;
                 border: none;
                 padding: 8px 16px;
@@ -210,7 +210,7 @@ frappe.ui.form.on('Sub Project', {
             }
 
             /* Hover states */
-            .upload-csv-btn:hover { background-color: #4338CA; }
+            .upload-csv-btn:hover { background-color: #155E95; }
             .download-sample-csv-btn:hover { background-color: #16a34a; }
             .release-btn:hover { background-color: #16a34a; }
             .hold-btn:hover { background-color: #b91c1c; }
@@ -303,27 +303,37 @@ frappe.ui.form.on('Sub Project', {
         tr.status-sold td { 
             background-color: #fcd34d !important; 
             color: white !important;
-            border: none !important;
+            // border: none !important;
+            border-bottom: solid 1px white;
+            border-top: solid 1px white;
         }
         tr.status-hold td { 
             background-color: #dc2626 !important; 
             color: white !important;
-            border: none !important;
+            // border: none !important;
+            border-bottom: solid 1px white;
+            border-top: solid 1px white;
         }
         tr.status-available td { 
             background-color: #16a34a !important; 
             color: white !important;
-            border: none !important;
+            // border: none !important;
+            border-bottom: solid 1px white;
+            border-top: solid 1px white;
         }
         tr.status-blocked-without-money td { 
             background-color: #a21caf !important; 
             color: white !important;
-            border: none !important;
+            // border: none !important;
+            border-bottom: solid 1px white;
+            border-top: solid 1px white;
         }
         tr.status-blocked-with-money td { 
             background-color: #1e40af !important; 
             color: white !important;
-            border: none !important;
+            // border: none !important;
+            border-bottom: solid 1px white;
+            border-top: solid 1px white;
         }
 
         /* Ensure menu options are visible */
@@ -388,8 +398,6 @@ function initializeUnitManagement(frm) {
     function getStatusClass(unit) {
         if (unit.custom_holdrelease === 'Hold') {
             return 'status-hold';
-        }else if (unit.custom_holdrelease === 'Release') {
-            return 'status-available';
         }
         
         switch(unit.status) {
@@ -436,11 +444,11 @@ function initializeUnitManagement(frm) {
                     ${frappe.utils.escape_html(unit.floor || '')}
                 </td>
                 <td>${frappe.utils.escape_html(unit.unit_name || '')}</td>
-                <td>${formatNumber(unit.saleable_area)}</td>
-                <td>${formatNumber(unit.carpet_area)}</td>
-                <td>${formatNumber(unit.terrace_area)}</td>
-                <td>${formatNumber(unit.built_up_area)}</td>
-                <td>${formatNumber(unit.common_area)}</td>
+                <td>${formatNumber(unit.saleable_area || '0')}</td>
+                <td>${formatNumber(unit.carpet_area || '0')}</td>
+                <td>${formatNumber(unit.terrace_area || '0')}</td>
+                <td>${formatNumber(unit.built_up_area || '0')}</td>
+                <td>${formatNumber(unit.common_area || '0')}</td>
                 <td>${frappe.utils.escape_html(unit.status || '')}</td>
                 <td>${frappe.utils.escape_html(unit.custom_holdrelease || '')}</td>
                 <td><i class="fa fa-pencil edit-icon"></i></td>
