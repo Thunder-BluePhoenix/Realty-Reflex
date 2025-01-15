@@ -160,6 +160,9 @@ doc_events = {
     "Task" : {"before_save":"realty_reflex.overrides.task.before_save",
               "on_update":"realty_reflex.overrides.task.on_update"},
 
+    "Project": {"onload":"realty_reflex.overrides.project.onload",
+                "on_trash":"realty_reflex.overrides.project.on_trash"}
+
 }
 
 # Scheduled Tasks
