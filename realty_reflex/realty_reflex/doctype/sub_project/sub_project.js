@@ -27,6 +27,159 @@ frappe.ui.form.on('Sub Project', {
             },
             __("View")
           );
+        frm.add_custom_button(
+        __("WBS"),
+        function () {
+            let d = new frappe.ui.Dialog({
+                title: 'WBS',
+                fields: [
+                    {
+                        label: 'Template',
+                        fieldname: 'template',
+                        fieldtype: 'Link',
+                        options: 'WBS Template'
+                    },
+                    
+                ],
+                size: 'large', // small, large, extra-large 
+                primary_action_label: 'Create',
+                primary_action(values) {
+                    frappe.call({
+                        method: 'realty_reflex.realty_reflex.doctype.sub_project.sub_project.create_group_task',
+                        args: {
+                          values: values,
+                          project:frm.doc.project
+                        },
+                        freeze: true,
+                        freeze_message: __('Creating Template Tasks................'),
+                        callback: function (r) {
+                            if(r.message){
+                            d.hide()
+                            let k = new frappe.ui.Dialog({
+                                title: 'WBS',
+                                fields: [
+                                    {
+                                        label: 'Phase',
+                                        fieldname: 'phase',
+                                        fieldtype: 'Link',
+                                        options: 'Phase',
+                                        onchange: function () {
+                                            const selectedPhase = k.get_value('phase');
+
+                                            // Apply filter to the subproject table if a phase is selected
+                                            if (selectedPhase) {
+                                                k.fields_dict.subproject.grid.get_field('sub_project').get_query = function () {
+                                                    return {
+                                                        filters: {
+                                                            custom_phase: selectedPhase,
+                                                            project: frm.doc.project // Assuming 'project' exists in the context
+                                                        }
+                                                    };
+                                                };
+                                        
+                                            }
+                                        }
+                                    },
+                                    {
+                                        label: __('Sub Project'),
+                                        fieldname: 'subprojects',
+                                        fieldtype: 'Table',
+                                        reqd: 1,
+                                        fields: [
+                                            {
+                                                label: 'Subproject',
+                                                fieldname: 'sub_project',
+                                                fieldtype: 'Link',
+                                                options: 'Sub Project',
+                                                in_list_view: 1,
+                                                get_query: function (doc) {
+                                                    const Project = frm.doc.project;
+                                                    return {
+                                                        filters: {
+                                                            project: Project
+                                                        }
+                                                    };
+                                                }
+
+                                            },
+                                        ],
+                                    },
+                                    {
+                                        label: __('Templates'),
+                                        fieldname: 'templates',
+                                        fieldtype: 'Table',
+                                        reqd: 1,
+                                        fields: [
+                                            {
+                                                label: 'WBS Template',
+                                                fieldname: 'template',
+                                                fieldtype: 'Link',
+                                                options: 'WBS Template',
+                                                in_list_view: 1,
+                                                get_query: function (doc) {
+                                                    return {
+                                                        filters: {
+                                                            disable: 0
+                                                        }
+                                                    };
+                                                }
+
+                                            },
+                                            {
+                                                label: 'Parent Task',
+                                                fieldname: 'parent',
+                                                fieldtype: 'Link',
+                                                options: 'Task',
+                                                in_list_view: 1,
+                                                get_query: function (doc) {
+                                                    const Project = frm.doc.project;
+                                                    return {
+                                                        filters: {
+                                                            project: Project
+                                                        }
+                                                    };
+                                                }
+
+                                            },
+                                        ],
+                                    },
+                                
+                
+                                ],
+        
+                                size: 'large', // small, large, extra-large 
+                                primary_action_label: 'Create',
+                                primary_action(values) {
+                                    frappe.call({
+                                        method: 'realty_reflex.realty_reflex.doctype.sub_project.sub_project.create_tasks',
+                                        args: {
+                                          values: values,
+                                          project:frm.doc.project
+                                        },
+                                        freeze: true,
+                                        freeze_message: __('Creating Template Tasks................'),
+                                        callback: function (r) {
+                                            if(r.message){
+                                                k.hide()
+                                                frappe.msgprint("Task Created Sucessfully")
+                                            }
+                                        }
+                                    })
+                                }
+
+                            })
+                            k.show();
+                            }
+
+                        }
+                    })
+                }
+            });
+            
+            d.show();
+        },
+        __("Create")
+        );
     },
     
 });

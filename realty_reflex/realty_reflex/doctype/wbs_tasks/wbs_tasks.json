@@ -1,0 +1,52 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-01-13 12:25:09.972560",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "subject",
+  "task_id",
+  "is_group",
+  "parent_task"
+ ],
+ "fields": [
+  {
+   "fieldname": "subject",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Subject"
+  },
+  {
+   "fieldname": "task_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Task ID"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_group",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is Group"
+  },
+  {
+   "fieldname": "parent_task",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Parent Task"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-01-13 13:54:15.144294",
+ "modified_by": "Administrator",
+ "module": "Realty Reflex",
+ "name": "WBS Tasks",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

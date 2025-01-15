@@ -131,3 +131,98 @@ def update_revision(self, method = None):
 		# self.custom_validate_data = json.dumps(current_values)
 
 
+
+
+@frappe.whitelist()
+def create_group_task(values, project):
+    try:
+        data = json.loads(values)  # Safely parse JSON
+        template_name = data.get("template")
+        if not template_name:
+            frappe.throw("Template is required")
+        
+        doc = frappe.get_doc("WBS Template", template_name)
+        tasks = {task.task_id: task for task in doc.tasks}  # Index tasks by task_id
+        
+        for task_id, task_data in tasks.items():
+            if task_data.is_group and not task_data.parent_task:
+                # Create root-level group tasks
+                task = frappe.new_doc("Task")
+                task.subject = task_data.subject
+                task.project = project
+                task.is_group = task_data.is_group
+                task.save(ignore_permissions=True)
+                
+                # Build the task tree
+                build_task_tree(task.name, task_data.task_id, tasks, project)
+        return True
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback(), "Create Group Task Failed")
+        frappe.throw(str(e))
+
+def build_task_tree(parent_task_name, parent_task_id, tasks, project):
+    for task_id, task_data in tasks.items():
+        if task_data.parent_task == parent_task_id:
+            # Create child task
+            child_task = frappe.new_doc("Task")
+            child_task.subject = task_data.subject
+            child_task.project = project
+            child_task.parent_task = parent_task_name
+            child_task.is_group = task_data.is_group
+            child_task.save(ignore_permissions=True)
+            
+            # Recursively build the tree for this child
+            build_task_tree(child_task.name, task_data.task_id, tasks, project)
+
+
+
+
+
+
+@frappe.whitelist()
+def create_tasks(values, project):
+	data = json.loads(values)  # Safely parse JSON
+	for i in data.get("subprojects"):
+		for j in data.get("templates"):
+			doc = frappe.get_doc("WBS Template", j.get("template"))
+			tasks = {task.task_id: task for task in doc.tasks}  # Index tasks by task_id
+			
+			for task_id, task_data in tasks.items():
+				if task_data.is_group and not task_data.parent_task:
+					# Create root-level group tasks
+					task = frappe.new_doc("Task")
+					task.subject = task_data.subject
+					task.project = project
+					task.is_group = task_data.is_group
+					task.sub_project=i.get("sub_project")
+					task.parent_task=j.get("parent")
+					task.save(ignore_permissions=True)
+					
+					# Build the task tree
+					child_build_task_tree(task.name, task_data.task_id, tasks, project,i.get("sub_project"))
+	return True
+
+
+
+def child_build_task_tree(parent_task_name, parent_task_id, tasks, project,sub_project):
+	for task_id, task_data in tasks.items():
+		if task_data.parent_task == parent_task_id:
+			# Create child task
+			child_task = frappe.new_doc("Task")
+			child_task.subject = task_data.subject
+			child_task.project = project
+			child_task.parent_task = parent_task_name
+			child_task.is_group = task_data.is_group
+			child_task.sub_project=sub_project
+			child_task.save(ignore_permissions=True)
+			
+			# Recursively build the tree for this child
+			child_build_task_tree(child_task.name, task_data.task_id, tasks, project,sub_project)
+
+
+
+
+
+
+
+
