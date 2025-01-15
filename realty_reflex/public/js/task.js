@@ -85,22 +85,42 @@ frappe.ui.form.on('Task', {
         const alignment_css = `
             <style>
        #service-spec-table {
-           width: 100%;
-           border-collapse: collapse;
-           margin-bottom: 10px;
+               width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+    
+    border-radius: 7px;
+    border: 5px;
        }
 
-       #service-spec-table th, #service-spec-table td {
-           text-align: left;
-           vertical-align: middle;
-           border: 1px solid #ddd;
-           padding: 8px;
+       #service-spec-table th, {
+              text-align: left;
+              vertical-align: middle;
+              border: 1px solid #ddd;
+              padding-left: 5px;
+              padding-right: 5px;
+              min-width: 3rem !important;
+           
+           
+       }
+            #service-spec-table td {
+              text-align: left;
+              vertical-align: middle;
+              border: 1px solid #ddd;
+              padding-left: 5px;
+              padding-right: 5px;
+              padding-bottom: 0;
+              padding-top: 0;
+              min-width: 3rem !important;
+           
+           
        }
 
        #service-spec-table th {
            background-color: #f9f9f9;
            font-weight: bold;
            text-transform: capitalize;
+           
        }
 
        /* Adjust column widths */
@@ -132,7 +152,7 @@ frappe.ui.form.on('Task', {
        }
 
        #service-spec-table .select-row {
-           margin: auto !important;
+           margin-left: 1px;
            display: block;
        }
 
@@ -152,6 +172,15 @@ frappe.ui.form.on('Task', {
        #add-row-btn, #delete-row-btn {
            margin-top: 1px;
        }
+         #select-counter {
+         font-size: 12px;
+         font-weight: 600;
+         }
+       #select-check{
+       display: flex;
+       algin-items: center;
+       justify-content: start;
+       }
    </style>`;
 
  
@@ -161,7 +190,7 @@ frappe.ui.form.on('Task', {
             <table class="table table-bordered" id="service-spec-table">
                 <thead>
                     <tr>
-                        <th></th>
+                        <th><span id="select-check"><input type="checkbox" id="select-all-rows" class="select-all-checkbox"><span id="select-counter"></span></span></th>
                         <th>No</th>
                         <th>Service Item</th>
                         <th>Unit</th>
@@ -189,24 +218,54 @@ frappe.ui.form.on('Task', {
             addRow();
         }
  
-        // Event Handlers
         setTimeout(() => {
+           
+            function updateSelectCounter() {
+                let selectedCount = $('#service-spec-table-body').find('.select-row:checked').length;
+                if (selectedCount > 0) {
+                    $('#select-counter').text(selectedCount + 'Row(s)').show();
+                } else {
+                    $('#select-counter').hide();
+                }
+                $('#delete-row-btn').toggle(selectedCount > 0); 
+            }
+        
             $('#add-row-btn').on('click', function () {
                 addRow();
                 updateSerialNumbers();
             });
- 
+        
+            
+            $('#select-all-rows').on('click', function () {
+                let isChecked = $(this).is(':checked');
+                $('#service-spec-table-body').find('.select-row').prop('checked', isChecked);
+                updateSelectCounter(); 
+            });
+        
+            
             $('#service-spec-table').on('click', '.select-row', function () {
                 let selected = $('#service-spec-table-body').find('.select-row:checked').length;
+                let total = $('#service-spec-table-body').find('.select-row').length;
                 $('#delete-row-btn').toggle(selected > 0);
+        
+                
+                $('#select-all-rows').prop('checked', selected === total);
+        
+                updateSelectCounter(); 
             });
- 
+        
+           
             $('#delete-row-btn').on('click', function () {
                 $('#service-spec-table-body').find('.select-row:checked').closest('tr').remove();
                 $('#delete-row-btn').hide();
                 updateSerialNumbers();
+          
+                $('#select-all-rows').prop('checked', false);
+        
+                updateSelectCounter(); 
             });
- 
+        
+            
             $('#service-spec-table').on('click', '.edit-row', function () {
                 let row = $(this).closest('tr');
                 openEditDialog(
@@ -222,6 +281,8 @@ frappe.ui.form.on('Task', {
                 );
             });
         }, 500);
+        
+        
  
         function updateRowTotal(row) {
             const serviceTotal = flt(row.find('.service-total-field').data('value') || 0);
@@ -289,7 +350,7 @@ frappe.ui.form.on('Task', {
 
         function initializeLinkFields() {
             $('#service-spec-table-body tr').each(function() {
-                // Initialize Service Item field
+               
                 $(this).find('.service-item-link').each(function() {
                     let $cell = $(this);
                     if (!$cell.find('.frappe-control').length) {
@@ -848,7 +909,6 @@ frappe.ui.form.on('Task', {
         frm.save_custom_service_spec_data();
     }
 });
-
 
 
 
