@@ -139,3 +139,12 @@ def unlock_project_tasks(project):
 
     for task in tasks:
         frappe.db.set_value("Task", task.name, "custom_wbs_status", "Unlocked")
+
+
+@frappe.whitelist()
+def get_task_value(project):
+    tasks=[]
+    tasks_list=frappe.db.get_all("Task",{"project":project},["name"])
+    return tasks_list
+    # for task in tasks_list:
+    #     pass

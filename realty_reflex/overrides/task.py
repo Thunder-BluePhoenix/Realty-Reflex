@@ -45,68 +45,64 @@ def on_update(doc, method = None):
 
 
 def data_long_text(doc, method):
-    try:
+    if doc.custom_service_type:
         service_data = json.loads(doc.custom_service_specification_data)
-    except (TypeError, json.JSONDecodeError):
-        frappe.throw("Invalid JSON format in Custom Service Specification Data")
-    
-    # Initialize totals
-    total_service = 0
-    total_material = 0
+        # Initialize totals
+        total_service = 0
+        total_material = 0
 
-    # Iterate through the parsed data for service totals
-    for item in service_data:
-        total_service += float(item.get("service_total", 0) or 0)
-        total_material += float(item.get("material_total", 0) or 0)
+        # Iterate through the parsed data for service totals
+        for item in service_data:
+            total_service += float(item.get("service_total", 0) or 0)
+            total_material += float(item.get("material_total", 0) or 0)
 
-    # Set the calculated totals to the respective fields
-    doc.custom_service_totalinr = total_service
-    doc.custom_material_totalinr = total_material
-    doc.custom_totalinr = total_service + total_material
+        # Set the calculated totals to the respective fields
+        doc.custom_service_totalinr = total_service
+        doc.custom_material_totalinr = total_material
+        doc.custom_totalinr = total_service + total_material
 
-    # Process the material_specification data to populate the child table
-    material_data = []
-    for item in service_data:
-        for material in item.get("material_specification", []):
-            # Create a composite key for matching
-            key = (
-                material.get("material_category_id"),
-                material.get("unit"),
-                material.get("rate"),
-                material.get("material_name", "Unknown")
-            )
-            existing_entry = next((m for m in material_data if (
-                m["material_category_id"] == key[0] and
-                m["unit"] == key[1] and
-                m["rate"] == key[2] and
-                m["material_name"] == key[3]
-            )), None)
+        # Process the material_specification data to populate the child table
+        material_data = []
+        for item in service_data:
+            for material in item.get("material_specification", []):
+                # Create a composite key for matching
+                key = (
+                    material.get("material_category_id"),
+                    material.get("unit"),
+                    material.get("rate"),
+                    material.get("material_name", "Unknown")
+                )
+                existing_entry = next((m for m in material_data if (
+                    m["material_category_id"] == key[0] and
+                    m["unit"] == key[1] and
+                    m["rate"] == key[2] and
+                    m["material_name"] == key[3]
+                )), None)
+                if existing_entry:
+                    # Update quantity and amount for matching entries
+                    existing_entry["qty"] += float(material.get("qty", 0))
+                    existing_entry["amount"] = existing_entry["qty"] * existing_entry["rate"]
+                else:
+                    # Add a new entry
+                    material_data.append({
+                        "material_category_id": material.get("material_category_id"),
+                        "material_name": material.get("material_name", None),
+                        "material_category": material.get("material_category", None),
+                        "unit": material.get("unit", "Unknown"),
+                        "qty": float(material.get("qty", 0)),
+                        "rate": float(material.get("rate", 0)),
+                        "amount": float(material.get("qty", 0)) * float(material.get("rate", 0))
+                    })
 
-            if existing_entry:
-                # Update quantity and amount for matching entries
-                existing_entry["qty"] += float(material.get("qty", 0))
-                existing_entry["amount"] = existing_entry["qty"] * existing_entry["rate"]
-            else:
-                # Add a new entry
-                material_data.append({
-                    "material_category_id": material.get("material_category_id"),
-                    "material_name": material.get("material_name", None),
-                    "material_category": material.get("material_category", None),
-                    "unit": material.get("unit", "Unknown"),
-                    "qty": float(material.get("qty", 0)),
-                    "rate": float(material.get("rate", 0)),
-                    "amount": float(material.get("qty", 0)) * float(material.get("rate", 0))
-                })
+        # Clear existing child table and populate with updated data
+        doc.custom_material_specification = []
+        total_material_inr = 0
+        for material in material_data:
+            doc.append("custom_material_specification", material)
+            total_material_inr += material["amount"]
 
-    # Clear existing child table and populate with updated data
-    doc.custom_material_specification = []
-    total_material_inr = 0
-    for material in material_data:
-        doc.append("custom_material_specification", material)
-        total_material_inr += material["amount"]
-
-    # Update the total material amount field
-    doc.custom_total_material_inr = total_material_inr
+        # Update the total material amount field
+        doc.custom_total_material_inr = total_material_inr
 
 
 

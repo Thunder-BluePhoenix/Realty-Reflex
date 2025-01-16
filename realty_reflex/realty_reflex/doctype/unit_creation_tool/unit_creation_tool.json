@@ -64,13 +64,15 @@
    "fieldname": "project_name",
    "fieldtype": "Link",
    "label": "Project name",
-   "options": "Project"
+   "options": "Project",
+   "reqd": 1
   },
   {
    "fieldname": "sub_project",
    "fieldtype": "Link",
    "label": "Sub Project",
-   "options": "Sub Project"
+   "options": "Sub Project",
+   "reqd": 1
   },
   {
    "fetch_from": "sub_project.custom_subproject_name",
@@ -267,7 +269,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-16 14:36:55.380949",
+ "modified": "2025-01-16 19:16:09.697211",
  "modified_by": "Administrator",
  "module": "Realty Reflex",
  "name": "Unit Creation Tool",

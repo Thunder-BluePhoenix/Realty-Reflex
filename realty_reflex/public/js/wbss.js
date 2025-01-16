@@ -2,6 +2,31 @@ frappe.provide("frappe.treeview_settings");
 
 frappe.treeview_settings["Task"] = {
     get_tree_nodes: "erpnext.projects.doctype.task.task.get_children",
+	on_get_node: function (nodes, deep = false) {
+		const project = frappe.project_selector.current_project
+		console.log("$$$$$$$$$$$$$$$$$$$$$$$$",nodes)
+		const get_balances = frappe.call({
+			method: "realty_reflex.api.get_task_value",
+			args: {
+				project: project
+			},
+		});
+		get_balances.then((r) => {
+		for (let task of r.message) {
+		const node = cur_tree.nodes && cur_tree.nodes[task.name];
+		
+		console.log("#########################",node.parent)
+		node.parent && node.parent.find(".balance-area").remove();
+		$(
+			'<span class="balance-area pull-right">' +
+				"1000 CR"+
+					
+				
+				"</span>"
+		).insertBefore(node.$ul);
+		}
+	})
+	},
     add_tree_node: "erpnext.projects.doctype.task.task.add_node",
     filters: [
         {
@@ -35,92 +60,75 @@ frappe.treeview_settings["Task"] = {
     root_label: "All Tasks",
     ignore_fields: ["parent_task"],
     onload: function (me) {
-        function toggle_lock_button(status) {
-            if (status === "Locked") {
-                me.page.add_inner_button(
-                    __("Unlock"),
-                    function () {
-                        const project = me.page.fields_dict.project.get_value();
-                        if (!project) {
-                            frappe.msgprint(__("Please select a project first"));
-                            return;
-                        }
-                        frappe.call({
-                            method: "realty_reflex.api.unlock_project_tasks",
-                            args: {
-                                project: project,
-                            },
-                            callback: function () {
-                                frappe.msgprint(__("All tasks have been unlocked"));
-                                me.make_tree(); // Refresh the tree to reflect changes
-                                me.page.clear_inner_toolbar(); // Rebuild buttons
-                                load_buttons(); // Reload buttons based on updated status
-                            },
-                        });
-                    }
-                );
-            } else {
-                me.page.add_inner_button(
-                    __("Lock"),
-                    function () {
-                        const project = me.page.fields_dict.project.get_value();
-                        if (!project) {
-                            frappe.msgprint(__("Please select a project first"));
-                            return;
-                        }
-                        frappe.call({
-                            method: "realty_reflex.api.lock_project_tasks",
-                            args: {
-                                project: project,
-                            },
-                            callback: function () {
-                                frappe.msgprint(__("All tasks have been locked"));
-                                me.make_tree(); // Refresh the tree to reflect changes
-                                me.page.clear_inner_toolbar(); // Rebuild buttons
-                                load_buttons(); // Reload buttons based on updated status
-                            },
-                        });
-                    }
-                );
-            }
-        }
-
-        function load_buttons() {
-            const project = me.page.fields_dict.project.get_value();
-            // if (!project) {
-            //     frappe.msgprint(__("Please select a project first"));
-            //     return;
-            // }
-			console.log(project)
-            frappe.call({
-                method: "realty_reflex.api.get_project_task_status",
-                args: { project: project },
-                callback: function (response) {
-					console.log(response.message)
-                    const status = response.message;
-                    toggle_lock_button(status);
-                },
-            });
-        }
-
         // Add other inner buttons
         me.page.add_inner_button(
             __("Release"),
             function () {
-                const project = me.page.fields_dict.project.get_value();
-                frappe.call({
-                    method: "realty_reflex.api.release_version",
-                    args: { project: project },
-                    callback: function () {
-                        frappe.msgprint(__("Budget is Released."));
-                        me.make_tree(); // Refresh the tree to reflect changes
-                    },
-                });
-            }
-        );
+				const project = me.page.fields_dict.project.get_value();
 
-        // Initial button load
-        load_buttons();
+
+				frappe.call({
+					method: "realty_reflex.api.release_version",
+					args: {
+						project: project,
+					},
+					callback: function (response) {
+						frappe.msgprint(__("Budget is Released."));
+						me.make_tree(); // Refresh the tree to reflect changes
+					},
+				});
+				
+			}
+        );
+		
+        me.page.add_inner_button(
+            __("Lock"),
+            function () {
+				const project = me.page.fields_dict.project.get_value();
+
+				if (!project) {
+					frappe.msgprint(__("Please select a project first"));
+					return;
+				}
+		
+				frappe.call({
+					method: "realty_reflex.api.lock_project_tasks",
+					args: {
+						project: project,
+					},
+					callback: function (response) {
+						frappe.msgprint(__("All tasks have been locked"));
+						me.make_tree(); // Refresh the tree to reflect changes
+					},
+				});
+				
+			}
+        );
+        me.page.add_inner_button(
+            __("Unlock"),
+            function () {
+				const project = me.page.fields_dict.project.get_value();
+
+
+				if (!project) {
+					frappe.msgprint(__("Please select a project first"));
+					return;
+				}
+		
+				frappe.call({
+					method: "realty_reflex.api.lock_project_tasks",
+					args: {
+						project: project,
+					},
+					callback: function (response) {
+						frappe.msgprint(__("All tasks have been locked"));
+						me.make_tree(); // Refresh the tree to reflect changes
+					},
+				});
+				
+			
+			}
+        );
 
         frappe.treeview_settings["Task"].page = {};
         $.extend(frappe.treeview_settings["Task"].page, me.page);
