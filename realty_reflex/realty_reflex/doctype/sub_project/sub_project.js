@@ -471,7 +471,7 @@ function initializeUnitManagement(frm) {
                 doctype: 'Unit',
                 filters: {
                     project_name: frm.doc.project,
-                    custom_sub_project_name: frm.doc.custom_subproject_name
+                    sub_project: frm.doc.name
                 },
                 fields: ['*'],
                 limit: 1000

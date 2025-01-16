@@ -1,0 +1,417 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:unit__appartment_no",
+ "creation": "2025-01-16 14:10:52.172079",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "basic_info_tab",
+  "project_name",
+  "sub_project",
+  "sub_project_name",
+  "floor",
+  "floor_type",
+  "udi",
+  "orientation",
+  "project_name_display",
+  "custom_plc_applicable",
+  "column_break_h4lq6",
+  "unit_name",
+  "unit__appartment_no",
+  "uom",
+  "unit_type",
+  "mandatory_car_park",
+  "status",
+  "custom_holdrelease",
+  "section_break_duk1n",
+  "land_area",
+  "terrace_area",
+  "garden_area",
+  "rera_area",
+  "column_break_q7xdd",
+  "common_area",
+  "carpet_area",
+  "landplot_area",
+  "column_break_vjnsn",
+  "dimensions",
+  "saleable_area",
+  "porche_area",
+  "built_up_area",
+  "section_break_86xaz",
+  "remarks",
+  "unit_vitals",
+  "site_measurement",
+  "section_break_ooqyz",
+  "certifying_company",
+  "booking_details_tab",
+  "customer_details_section",
+  "party_type",
+  "party",
+  "contact",
+  "column_break_oagus",
+  "party_name",
+  "company_bank_account",
+  "party_bank_account",
+  "address",
+  "section_break_jhfgq",
+  "booking_date",
+  "column_break_f0bxy",
+  "valid_upto",
+  "section_break_ukp53",
+  "remarks_1",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "basic_info_tab",
+   "fieldtype": "Tab Break",
+   "label": "Basic Info"
+  },
+  {
+   "fieldname": "project_name",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "Project",
+   "reqd": 1
+  },
+  {
+   "fieldname": "floor",
+   "fieldtype": "Link",
+   "label": "Floor",
+   "length": 1000,
+   "options": "Floors",
+   "reqd": 1
+  },
+  {
+   "fieldname": "floor_type",
+   "fieldtype": "Select",
+   "label": "Floor Type",
+   "options": "Normal Floor\nPenthouse\nMezzaine Floor\nNormal\nPodium"
+  },
+  {
+   "fieldname": "udi",
+   "fieldtype": "Data",
+   "label": "UDI"
+  },
+  {
+   "fieldname": "orientation",
+   "fieldtype": "Table MultiSelect",
+   "label": "Orientation",
+   "options": "Orientation unit select"
+  },
+  {
+   "fetch_from": "project_name.project_name",
+   "fieldname": "project_name_display",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Project name display"
+  },
+  {
+   "fieldname": "column_break_h4lq6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "unit__appartment_no",
+   "fieldtype": "Data",
+   "label": "Unit Code",
+   "unique": 1
+  },
+  {
+   "fetch_from": "tower_name.sales_uom",
+   "fieldname": "uom",
+   "fieldtype": "Data",
+   "label": "UOM",
+   "read_only": 1
+  },
+  {
+   "fieldname": "unit_type",
+   "fieldtype": "Link",
+   "label": "Unit Type",
+   "options": "Unit Types"
+  },
+  {
+   "fieldname": "mandatory_car_park",
+   "fieldtype": "Int",
+   "label": " Mandatory Car Park"
+  },
+  {
+   "default": "Available",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Available\nBlock With Money\nBlock Without Money",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_duk1n",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "land_area",
+   "fieldtype": "Int",
+   "label": "Land Area(Sq.Ft)"
+  },
+  {
+   "default": "0",
+   "fieldname": "terrace_area",
+   "fieldtype": "Int",
+   "label": "Terrace Area (Sq.Ft)"
+  },
+  {
+   "default": "0",
+   "fieldname": "garden_area",
+   "fieldtype": "Int",
+   "label": "Garden Area(Sq.Ft)"
+  },
+  {
+   "default": "0",
+   "fieldname": "rera_area",
+   "fieldtype": "Int",
+   "label": "RERA Area(Sq.Ft)"
+  },
+  {
+   "fieldname": "column_break_q7xdd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "common_area",
+   "fieldtype": "Int",
+   "label": "Common Area(Sq.Ft)"
+  },
+  {
+   "default": "0",
+   "fieldname": "carpet_area",
+   "fieldtype": "Int",
+   "label": "Carpet Area(Sq.Ft)"
+  },
+  {
+   "default": "0",
+   "fieldname": "landplot_area",
+   "fieldtype": "Int",
+   "label": "Land/Plot Area(Sq.Ft)"
+  },
+  {
+   "fieldname": "column_break_vjnsn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "dimensions",
+   "fieldtype": "Int",
+   "hidden": 1,
+   "label": "Dimensions"
+  },
+  {
+   "default": "0",
+   "fieldname": "saleable_area",
+   "fieldtype": "Int",
+   "label": "Saleable Area(Sq.Ft)"
+  },
+  {
+   "default": "0",
+   "fieldname": "porche_area",
+   "fieldtype": "Int",
+   "label": "Porche Area(Sq.Ft)"
+  },
+  {
+   "default": "0",
+   "fieldname": "built_up_area",
+   "fieldtype": "Int",
+   "label": "Built Up Area(Sq.Ft)"
+  },
+  {
+   "fieldname": "section_break_86xaz",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Text",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "unit_vitals",
+   "fieldtype": "Tab Break",
+   "hidden": 1,
+   "label": "Unit Vitals"
+  },
+  {
+   "fieldname": "site_measurement",
+   "fieldtype": "Table",
+   "label": "Site Measurement",
+   "options": "Site Measurement"
+  },
+  {
+   "fieldname": "section_break_ooqyz",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "certifying_company",
+   "fieldtype": "Table",
+   "label": "Certifying Company",
+   "options": "Inspection"
+  },
+  {
+   "depends_on": "eval:doc.party_type",
+   "fieldname": "booking_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Booking Details"
+  },
+  {
+   "fieldname": "customer_details_section",
+   "fieldtype": "Section Break",
+   "label": "Customer Details"
+  },
+  {
+   "fieldname": "party_type",
+   "fieldtype": "Data",
+   "label": "Party Type",
+   "read_only": 1
+  },
+  {
+   "fieldname": "party",
+   "fieldtype": "Data",
+   "label": "Party",
+   "read_only": 1
+  },
+  {
+   "fieldname": "contact",
+   "fieldtype": "Data",
+   "label": "Contact",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_oagus",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "party_name",
+   "fieldtype": "Data",
+   "label": "Party Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "company_bank_account",
+   "fieldtype": "Data",
+   "label": "Company Bank Account",
+   "read_only": 1
+  },
+  {
+   "fieldname": "party_bank_account",
+   "fieldtype": "Data",
+   "label": "Party Bank Account",
+   "read_only": 1
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Data",
+   "label": "Address",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_jhfgq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "depends_on": "eval:doc.party_type",
+   "fieldname": "booking_date",
+   "fieldtype": "Date",
+   "label": "Booking Date"
+  },
+  {
+   "fieldname": "column_break_f0bxy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.party_type",
+   "fieldname": "valid_upto",
+   "fieldtype": "Date",
+   "label": "Valid Upto"
+  },
+  {
+   "fieldname": "section_break_ukp53",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "remarks_1",
+   "fieldtype": "Text",
+   "label": "Remarks",
+   "read_only_depends_on": "eval:!(doc.booking_for)"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Unit",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "sub_project",
+   "fieldtype": "Link",
+   "label": "Sub Project",
+   "options": "Sub Project",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "sub_project.custom_subproject_name",
+   "fieldname": "sub_project_name",
+   "fieldtype": "Data",
+   "label": "Sub Project Name"
+  },
+  {
+   "default": "0",
+   "fieldname": "custom_plc_applicable",
+   "fieldtype": "Check",
+   "label": "PLC Applicable"
+  },
+  {
+   "fieldname": "unit_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Unit /Appartment No.",
+   "reqd": 1
+  },
+  {
+   "default": "Hold",
+   "fieldname": "custom_holdrelease",
+   "fieldtype": "Select",
+   "label": "Hold/Release",
+   "options": "\nHold\nRelease"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-01-16 15:38:33.447966",
+ "modified_by": "Administrator",
+ "module": "Realty Reflex",
+ "name": "Unit",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "project_name",
+ "show_title_field_in_link": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "unit_name",
+ "translated_doctype": 1
+}

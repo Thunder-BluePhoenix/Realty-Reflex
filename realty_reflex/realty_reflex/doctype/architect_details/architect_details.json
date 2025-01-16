@@ -1,0 +1,44 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:architect_name",
+ "creation": "2025-01-16 15:01:01.987406",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "architect_name",
+  "comments"
+ ],
+ "fields": [
+  {
+   "columns": 3,
+   "fieldname": "architect_name",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Architect Name",
+   "options": "Architect",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "columns": 5,
+   "fieldname": "comments",
+   "fieldtype": "Text",
+   "label": "Comments"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-01-16 15:01:01.987406",
+ "modified_by": "Administrator",
+ "module": "Realty Reflex",
+ "name": "Architect Details",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

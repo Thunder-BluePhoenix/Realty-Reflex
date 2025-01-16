@@ -1,0 +1,295 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{sub_project}-{unit_name}",
+ "creation": "2025-01-16 13:52:13.942318",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "basic_info_tab",
+  "unit_name",
+  "project_name",
+  "sub_project",
+  "custom_sub_project_name",
+  "udi",
+  "orientation",
+  "project_name_display",
+  "custom_plc_applicable",
+  "column_break_h4lq6",
+  "unit__appartment_no",
+  "uom",
+  "unit_type",
+  "mandatory_car_park",
+  "status",
+  "custom_holdrelease",
+  "section_break_syoe",
+  "custom_floor_details",
+  "section_break_duk1n",
+  "land_area",
+  "terrace_area",
+  "garden_area",
+  "rera_area",
+  "column_break_q7xdd",
+  "common_area",
+  "carpet_area",
+  "landplot_area",
+  "column_break_vjnsn",
+  "dimensions",
+  "saleable_area",
+  "porche_area",
+  "built_up_area",
+  "section_break_86xaz",
+  "remarks",
+  "unit_vitals",
+  "site_measurement",
+  "section_break_ooqyz",
+  "certifying_company"
+ ],
+ "fields": [
+  {
+   "fieldname": "basic_info_tab",
+   "fieldtype": "Tab Break",
+   "label": "Basic Info"
+  },
+  {
+   "fieldname": "unit_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Unit Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "project_name",
+   "fieldtype": "Link",
+   "label": "Project name",
+   "options": "Project"
+  },
+  {
+   "fieldname": "sub_project",
+   "fieldtype": "Link",
+   "label": "Sub Project",
+   "options": "Sub Project"
+  },
+  {
+   "fetch_from": "sub_project.custom_subproject_name",
+   "fieldname": "custom_sub_project_name",
+   "fieldtype": "Data",
+   "label": "Sub Project Name"
+  },
+  {
+   "fieldname": "udi",
+   "fieldtype": "Data",
+   "label": "UDI"
+  },
+  {
+   "fieldname": "orientation",
+   "fieldtype": "Table MultiSelect",
+   "label": "Orientation",
+   "options": "Orientation unit select"
+  },
+  {
+   "fetch_from": "project_name.project_name",
+   "fieldname": "project_name_display",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Project name display"
+  },
+  {
+   "default": "0",
+   "fieldname": "custom_plc_applicable",
+   "fieldtype": "Check",
+   "label": "PLC Applicable"
+  },
+  {
+   "fieldname": "column_break_h4lq6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "unit__appartment_no",
+   "fieldtype": "Data",
+   "label": "Unit Code",
+   "unique": 1
+  },
+  {
+   "fetch_from": "tower_name.sales_uom",
+   "fieldname": "uom",
+   "fieldtype": "Data",
+   "label": "UOM",
+   "read_only": 1
+  },
+  {
+   "fieldname": "unit_type",
+   "fieldtype": "Link",
+   "label": "Unit Type",
+   "options": "Unit Types"
+  },
+  {
+   "fieldname": "mandatory_car_park",
+   "fieldtype": "Int",
+   "label": " Mandatory Car Park"
+  },
+  {
+   "default": "Available",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Available\nBlock With Money\nBlock Without Money",
+   "read_only": 1
+  },
+  {
+   "default": "Hold",
+   "fieldname": "custom_holdrelease",
+   "fieldtype": "Select",
+   "label": "Hold/Release",
+   "options": "\nHold\nRelease"
+  },
+  {
+   "fieldname": "section_break_syoe",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "custom_floor_details",
+   "fieldtype": "Table",
+   "label": "Floor Details",
+   "options": "Floor Type Realty Reflex"
+  },
+  {
+   "fieldname": "section_break_duk1n",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "land_area",
+   "fieldtype": "Int",
+   "label": "Land Area"
+  },
+  {
+   "default": "0",
+   "fieldname": "terrace_area",
+   "fieldtype": "Int",
+   "label": "Terrace Area "
+  },
+  {
+   "default": "0",
+   "fieldname": "garden_area",
+   "fieldtype": "Int",
+   "label": "Garden Area"
+  },
+  {
+   "default": "0",
+   "fieldname": "rera_area",
+   "fieldtype": "Int",
+   "label": "RERA Area"
+  },
+  {
+   "fieldname": "column_break_q7xdd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "common_area",
+   "fieldtype": "Int",
+   "label": "Common Area"
+  },
+  {
+   "default": "0",
+   "fieldname": "carpet_area",
+   "fieldtype": "Int",
+   "label": "Carpet Area"
+  },
+  {
+   "default": "0",
+   "fieldname": "landplot_area",
+   "fieldtype": "Int",
+   "label": "Land/Plot Area"
+  },
+  {
+   "fieldname": "column_break_vjnsn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "dimensions",
+   "fieldtype": "Int",
+   "hidden": 1,
+   "label": "Dimensions"
+  },
+  {
+   "default": "0",
+   "fieldname": "saleable_area",
+   "fieldtype": "Int",
+   "label": "Saleable Area"
+  },
+  {
+   "default": "0",
+   "fieldname": "porche_area",
+   "fieldtype": "Int",
+   "label": "Porche Area"
+  },
+  {
+   "default": "0",
+   "fieldname": "built_up_area",
+   "fieldtype": "Int",
+   "label": "Built Up Area"
+  },
+  {
+   "fieldname": "section_break_86xaz",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Text",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "unit_vitals",
+   "fieldtype": "Tab Break",
+   "hidden": 1,
+   "label": "Unit Vitals"
+  },
+  {
+   "fieldname": "site_measurement",
+   "fieldtype": "Table",
+   "label": "Site Measurement",
+   "options": "Site Measurement"
+  },
+  {
+   "fieldname": "section_break_ooqyz",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "certifying_company",
+   "fieldtype": "Table",
+   "label": "Certifying Company",
+   "options": "Inspection"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-01-16 14:36:55.380949",
+ "modified_by": "Administrator",
+ "module": "Realty Reflex",
+ "name": "Unit Creation Tool",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "project_name",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "translated_doctype": 1
+}
