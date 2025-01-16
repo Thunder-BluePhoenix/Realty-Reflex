@@ -12,4 +12,4 @@ def onload(self, method):
 
 
 def on_trash(self, method):
-        delete_contact_and_address(self)
+        delete_contact_and_address(self.doctype,self.name)

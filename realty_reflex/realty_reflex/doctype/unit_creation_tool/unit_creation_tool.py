@@ -14,8 +14,16 @@ class UnitCreationTool(Document):
 	def before_save(self):
 		self.set_unit()
 	def set_unit(self):
-		if self.get("__islocal"):
 			value=[]
+			all_project=frappe.db.get_all("Unit Creation Tool",{"sub_project":self.sub_project,"unit_type":self.unit_type,"name":["!=",self.name]},["name"])
+			for j in all_project:
+				sub_pro=frappe.get_doc("Unit Creation Tool",j.name)
+
+				for i in sub_pro.custom_floor_details:
+					if i.qty:
+						value.append(i.qty)
+
+
 			for i in self.custom_floor_details:
 				if i.qty:
 					value.append(i.qty)
@@ -25,7 +33,7 @@ class UnitCreationTool(Document):
 				for i in doc.custom_unit_type:
 					if i.unit_type==self.unit_type:
 						update=1
-						i.qty+=sum(value)
+						i.qty=sum(value)
 				if update==0:
 					doc.append("custom_unit_type",{
 						"unit_type":self.unit_type,
