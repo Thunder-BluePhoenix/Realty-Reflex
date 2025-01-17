@@ -88,6 +88,7 @@
   {
    "fieldname": "orientation",
    "fieldtype": "Table MultiSelect",
+   "hidden": 1,
    "label": "Orientation",
    "options": "Orientation unit select"
   },
@@ -144,6 +145,7 @@
    "default": "Hold",
    "fieldname": "custom_holdrelease",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Hold/Release",
    "options": "\nHold\nRelease"
   },
@@ -269,7 +271,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-16 19:16:09.697211",
+ "modified": "2025-01-17 22:26:28.862703",
  "modified_by": "Administrator",
  "module": "Realty Reflex",
  "name": "Unit Creation Tool",

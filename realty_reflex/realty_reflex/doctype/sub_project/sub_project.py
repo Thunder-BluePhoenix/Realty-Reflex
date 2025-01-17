@@ -33,12 +33,15 @@ class SubProject(Document):
 		if self.custom_total_budget_allocated:
 			val=self.number_to_words(self.custom_total_budget_allocated)
 			self.custom_amount_in_word=val
+
+		validate_floors_before_save(self)
 		if self.custom_no_of_floors:
-			self.get_floor()
+			# self.get_floor()
+			validate_and_create_floors(self)
 
 	def get_floor(self):
 		self.custom_floors_table=[]
-		floors=frappe.db.get_all("Floors",{"floor":["<=",self.custom_no_of_floors]},["name"],order_by='floor asc')
+		floors=frappe.db.get_all("Floors",{"floor":["<",self.custom_no_of_floors]},["name"],order_by='floor asc')
 		for j in floors:
 			self.append("custom_floors_table",{
 				"floors":j.get("name")
@@ -237,5 +240,125 @@ def child_build_task_tree(parent_task_name, parent_task_id, tasks, project,sub_p
 
 
 
+
+@frappe.whitelist()
+def prepare_unit_creation_tool(sub_project_name, method = None):
+    # Fetch the Sub Project document
+    sub_project = frappe.get_doc("Sub Project", sub_project_name)
+    
+    # Prepare data for the Unit Creation Tool
+    unit_creation_tool = frappe.new_doc("Unit Creation Tool")
+    unit_creation_tool.project_name = sub_project.project
+    unit_creation_tool.sub_project = sub_project.name
+
+    # Populate child table (custom_floor_details) from Sub Project's custom_floors_table
+    if sub_project.custom_floors_table:
+        for floor_row in sub_project.custom_floors_table:
+            unit_creation_tool.append("custom_floor_details", {
+                "floor": floor_row.floors  # Map the field from Sub Project
+            })
+
+    # Return the document as JSON without saving it
+    return unit_creation_tool.as_dict()
+
+
+
+
+@frappe.whitelist()
+def validate_and_create_floors(self):
+    """
+    Validate the custom_no_of_floors in the Sub Project doctype, create missing Floor docs,
+    and populate the custom_floors_table.
+    """
+    # Fetch the Sub Project document
+    # sub_project = frappe.get_doc("Sub Project", self)
+
+    # Get the number of floors specified in Sub Project
+    custom_no_of_floors = self.custom_no_of_floors
+    if custom_no_of_floors is None or custom_no_of_floors < 1:
+        frappe.throw("Please specify a valid number of floors in the 'custom_no_of_floors' field.")
+
+    # Get all existing Floor documents and map them by their floor number
+    existing_floors = frappe.get_all("Floors", fields=["name", "floor"], order_by="floor")
+    existing_floors_map = {int(floor["floor"]): floor["name"] for floor in existing_floors}
+
+    # Find the highest existing floor
+    max_existing_floor = max(existing_floors_map.keys(), default=-1)
+
+    # Create missing Floor documents if necessary
+    if custom_no_of_floors - 1 > max_existing_floor:
+        for floor_number in range(max_existing_floor + 1, custom_no_of_floors):
+            floor_doc = frappe.get_doc({
+                "doctype": "Floors",
+                "floor": floor_number,
+                "floor_name": get_floor_name(floor_number)
+            })
+            floor_doc.insert(ignore_permissions=True)  # Insert new Floor document
+
+    # Populate the custom_floors_table in Sub Project
+    self.custom_floors_table = []
+    for floor_number in range(custom_no_of_floors):
+        if floor_number in existing_floors_map:
+            floor_doc_name = existing_floors_map[floor_number]
+        else:
+            floor_doc_name = frappe.get_value("Floors", {"floor": floor_number}, "name")
+
+        self.append("custom_floors_table", {
+            "floors": floor_doc_name  # Link to the Floors document
+        })
+
+    # Save the updated Sub Project document
+    # sub_project.save()
+
+def get_floor_name(floor_number):
+    """Generate floor name dynamically based on the floor number."""
+    if floor_number == 0:
+        return "Ground"
+    if 10 <= floor_number % 100 <= 20:  # Special case for '11th', '12th', etc.
+        suffix = "th"
+    else:
+        suffix = {1: "st", 2: "nd", 3: "rd"}.get(floor_number % 10, "th")
+    return f"{floor_number}{suffix}"
+
+
+
+
+
+
+
+
+
+
+@frappe.whitelist()
+def validate_floors_before_save(self):
+	"""
+	Before saving the Sub Project, check the number of units created for each floor.
+	Ensure that the number of units for a floor is not reduced beyond the specified
+	number of floors in the Sub Project.
+	"""
+	# Fetch the Sub Project document
+	# sub_project = frappe.get_doc("Sub Project", self)
+
+	# Get the number of floors specified in Sub Project
+	custom_no_of_floors = self.custom_no_of_floors
+	if custom_no_of_floors is None or custom_no_of_floors < 1:
+		frappe.throw("Please specify a valid number of floors in the 'custom_no_of_floors' field.")
+
+	# Retrieve all Unit documents where sub_project is linked to this Sub Project
+	units = frappe.get_all("Unit", filters={"sub_project": self.name}, fields=["name", "floor"])
+
+	# Initialize a set to store floors from the Unit documents
+	floor_set_from_units = set()
+
+	# Loop through the Unit docs and add floor information to the set
+	for unit in units:
+		# Add the floor to the set (set ensures no duplicates)
+		floor_set_from_units.add(unit.floor)
+
+	floor_count = len(floor_set_from_units)
+	# Now check if the count of unique floors is less than the custom_no_of_floors
+	print("@@@@@@@@@@@@@@@@@@@@@@@@@@@", floor_set_from_units)
+	if floor_count > custom_no_of_floors:
+		frappe.throw(f"Units for some floors have already been created. You cannot reduce the number of floors below {floor_count}.")
 
 

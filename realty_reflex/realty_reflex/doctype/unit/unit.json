@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:unit__appartment_no",
+ "autoname": "format:UN-{#######}",
  "creation": "2025-01-16 14:10:52.172079",
  "default_view": "List",
  "doctype": "DocType",
@@ -20,12 +20,13 @@
   "custom_plc_applicable",
   "column_break_h4lq6",
   "unit_name",
-  "unit__appartment_no",
   "uom",
   "unit_type",
   "mandatory_car_park",
   "status",
   "custom_holdrelease",
+  "unit_creation_tool",
+  "unit_no",
   "section_break_duk1n",
   "land_area",
   "terrace_area",
@@ -99,6 +100,7 @@
   {
    "fieldname": "orientation",
    "fieldtype": "Table MultiSelect",
+   "hidden": 1,
    "label": "Orientation",
    "options": "Orientation unit select"
   },
@@ -112,12 +114,6 @@
   {
    "fieldname": "column_break_h4lq6",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "unit__appartment_no",
-   "fieldtype": "Data",
-   "label": "Unit Code",
-   "unique": 1
   },
   {
    "fetch_from": "tower_name.sales_uom",
@@ -375,23 +371,37 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Unit /Appartment No.",
-   "reqd": 1
+   "reqd": 1,
+   "unique": 1
   },
   {
    "default": "Hold",
    "fieldname": "custom_holdrelease",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Hold/Release",
    "options": "\nHold\nRelease"
+  },
+  {
+   "fieldname": "unit_creation_tool",
+   "fieldtype": "Link",
+   "label": "Unit Creation Tool",
+   "options": "Unit Creation Tool"
+  },
+  {
+   "fieldname": "unit_no",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Unit No."
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-16 15:38:33.447966",
+ "modified": "2025-01-18 03:09:19.754944",
  "modified_by": "Administrator",
  "module": "Realty Reflex",
  "name": "Unit",
- "naming_rule": "By fieldname",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

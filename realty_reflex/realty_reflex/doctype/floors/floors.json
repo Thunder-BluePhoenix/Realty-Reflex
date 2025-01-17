@@ -11,19 +11,25 @@
  ],
  "fields": [
   {
+   "allow_in_quick_entry": 1,
    "fieldname": "floor_name",
    "fieldtype": "Data",
-   "label": "Floor Name"
+   "in_list_view": 1,
+   "label": "Floor Name",
+   "reqd": 1
   },
   {
+   "allow_in_quick_entry": 1,
    "fieldname": "floor",
    "fieldtype": "Int",
-   "label": "Floor"
+   "in_list_view": 1,
+   "label": "Floor No.",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-15 23:18:22.299992",
+ "modified": "2025-01-17 21:53:58.926914",
  "modified_by": "Administrator",
  "module": "Realty Reflex",
  "name": "Floors",
@@ -43,6 +49,7 @@
    "write": 1
   }
  ],
+ "quick_entry": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

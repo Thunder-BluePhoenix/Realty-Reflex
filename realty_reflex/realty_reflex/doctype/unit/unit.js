@@ -94,11 +94,11 @@ frappe.ui.form.on('Unit', {
 
 
 
-frappe.ui.form.on('Unit', {
-    unit_number: function (frm) {
-        var unit_code = frm.doc.unit_number;
-        var sub_project = frm.doc.sub_project;
-        var combinedValue = sub_project + unit_code;
-        frm.set_value('unit__appartment_no', combinedValue);
-    }
-});
+// frappe.ui.form.on('Unit', {
+//     unit_number: function (frm) {
+//         var unit_code = frm.doc.unit_number;
+//         var sub_project = frm.doc.sub_project;
+//         var combinedValue = sub_project + unit_code;
+//         frm.set_value('unit__appartment_no', combinedValue);
+//     }
+// });
