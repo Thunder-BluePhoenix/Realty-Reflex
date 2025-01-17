@@ -1414,9 +1414,9 @@ function handleFileUpload(event) {
 }
 
 function downloadSampleCsv() {
-    const csvContent = `data:text/csv;charset=utf-8,project_id,tower_id,floor,unit_unique_id,unit__appartment_no,unit_type,hold_release,land_area,saleable_area,common_area,dimensions,garden_area,terrace_area,carpet_area,landplot_area,built_up_area,rera_area,remarks,
-PROJ-0001,T-A,Ground,101,A1,1BHK,Release,500,400,100,10x20,50,30,150,200,250,300,First unit remarks,
-PROJ-0001,T-A,Ground,102,A2,2BHK,Hold,600,500,100,12x25,60,40,200,250,300,350,Second unit remarks`;
+    const csvContent = `data:text/csv;charset=utf-8,project_id,tower_id,floor,unit_unique_id,unit_type,hold_release,land_area,saleable_area,common_area,dimensions,garden_area,terrace_area,carpet_area,landplot_area,built_up_area,rera_area,remarks,
+PROJ-0001,T-A,Ground,101,1BHK,Release,500,400,100,10x20,50,30,150,200,250,300,First unit remarks,
+PROJ-0001,T-A,Ground,102,2BHK,Hold,600,500,100,12x25,60,40,200,250,300,350,Second unit remarks`;
 
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');

@@ -43,7 +43,7 @@ def create_unit(row):
         "tower_name": row.get("tower_id"),
         "floor": row.get("floor"),
         "unit_name": row.get("unit_unique_id"),
-        "unit__appartment_no": row.get("unit__appartment_no"),
+        # "unit__appartment_no": row.get("unit__appartment_no"),
         "unit_type": row.get("unit_type"),
         "hold_release": row.get("hold_release"),
         "land_area": row.get("land_area"),
