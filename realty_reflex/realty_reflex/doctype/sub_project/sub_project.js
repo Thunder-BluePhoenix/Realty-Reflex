@@ -619,9 +619,9 @@ function initializeUnitManagement(frm) {
                 <td>
                     <input type="checkbox" class="unit-checkbox" data-unit="${unit.name}"
                            ${selectedUnits.has(unit.name) ? 'checked' : ''}>
-                    ${frappe.utils.escape_html(unit.floor || '')}
+                    ${frappe.utils.escape_html(unit.unit_name || '')}
                 </td>
-                <td>${frappe.utils.escape_html(unit.unit_name || '')}</td>
+                <td>${frappe.utils.escape_html(unit.unit_type || '')}</td>
                 <td>${formatNumber(unit.saleable_area || '0')}</td>
                 <td>${formatNumber(unit.carpet_area || '0')}</td>
                 <td>${formatNumber(unit.terrace_area || '0')}</td>

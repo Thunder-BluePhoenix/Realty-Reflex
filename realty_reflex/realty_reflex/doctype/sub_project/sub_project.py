@@ -8,6 +8,7 @@ from frappe.model.document import Document
 from frappe.utils import flt, money_in_words
 import json
 from frappe.utils import now_datetime
+from frappe.utils import date_diff, nowdate
 
 
 class SubProject(NestedSet):
@@ -38,6 +39,8 @@ class SubProject(Document):
 		if self.custom_no_of_floors:
 			# self.get_floor()
 			validate_and_create_floors(self)
+
+		calculate_tat(self, method)
 
 	def get_floor(self):
 		self.custom_floors_table=[]
@@ -263,31 +266,25 @@ def prepare_unit_creation_tool(sub_project_name, method = None):
 
 
 
-
 @frappe.whitelist()
 def validate_and_create_floors(self):
     """
-    Validate the custom_no_of_floors in the Sub Project doctype, create missing Floor docs,
-    and populate the custom_floors_table.
+    Validate the custom_no_of_floors in the Sub Project doctype, 
+    create missing Floor docs, and populate the custom_floors_table.
     """
-    # Fetch the Sub Project document
-    # sub_project = frappe.get_doc("Sub Project", self)
-
     # Get the number of floors specified in Sub Project
     custom_no_of_floors = self.custom_no_of_floors
     if custom_no_of_floors is None or custom_no_of_floors < 1:
         frappe.throw("Please specify a valid number of floors in the 'custom_no_of_floors' field.")
-
-    # Get all existing Floor documents and map them by their floor number
+    
+    # Fetch all existing Floor documents and map them by their floor number
     existing_floors = frappe.get_all("Floors", fields=["name", "floor"], order_by="floor")
     existing_floors_map = {int(floor["floor"]): floor["name"] for floor in existing_floors}
 
-    # Find the highest existing floor
-    max_existing_floor = max(existing_floors_map.keys(), default=-1)
-
-    # Create missing Floor documents if necessary
-    if custom_no_of_floors - 1 > max_existing_floor:
-        for floor_number in range(max_existing_floor + 1, custom_no_of_floors):
+    # Ensure all floors from 1 to custom_no_of_floors exist
+    for floor_number in range(1, custom_no_of_floors + 1):
+        if floor_number not in existing_floors_map:
+            # Create a new Floor document
             floor_doc = frappe.get_doc({
                 "doctype": "Floors",
                 "floor": floor_number,
@@ -295,32 +292,25 @@ def validate_and_create_floors(self):
             })
             floor_doc.insert(ignore_permissions=True)  # Insert new Floor document
 
+            # Update the map with the newly created Floor
+            existing_floors_map[floor_number] = floor_doc.name
+
     # Populate the custom_floors_table in Sub Project
     self.custom_floors_table = []
-    for floor_number in range(custom_no_of_floors):
-        if floor_number in existing_floors_map:
-            floor_doc_name = existing_floors_map[floor_number]
-        else:
-            floor_doc_name = frappe.get_value("Floors", {"floor": floor_number}, "name")
-
+    for floor_number in range(1, custom_no_of_floors + 1):
+        floor_doc_name = existing_floors_map[floor_number]
         self.append("custom_floors_table", {
             "floors": floor_doc_name  # Link to the Floors document
         })
 
-    # Save the updated Sub Project document
-    # sub_project.save()
 
 def get_floor_name(floor_number):
     """Generate floor name dynamically based on the floor number."""
-    if floor_number == 0:
-        return "Ground"
     if 10 <= floor_number % 100 <= 20:  # Special case for '11th', '12th', etc.
         suffix = "th"
     else:
         suffix = {1: "st", 2: "nd", 3: "rd"}.get(floor_number % 10, "th")
     return f"{floor_number}{suffix}"
-
-
 
 
 
@@ -360,5 +350,37 @@ def validate_floors_before_save(self):
 	print("@@@@@@@@@@@@@@@@@@@@@@@@@@@", floor_set_from_units)
 	if floor_count > custom_no_of_floors:
 		frappe.throw(f"Units for some floors have already been created. You cannot reduce the number of floors below {floor_count}.")
+
+
+
+
+
+
+
+@frappe.whitelist()
+def calculate_tat(doc, method):
+	"""
+	Calculate the Turnaround Time (TAT) in days between the start and end date-time fields
+	and update the custom_tat field in the Sub Project doctype.
+	"""
+	# Ensure the required fields are present
+	if not doc.custom_actual_start_date_and_time or not doc.custom_actual_finish_date__time:
+		doc.custom_tat = None  # Clear the field if dates are not provided
+		return
+
+	# Calculate the difference in days
+	start_date = doc.custom_actual_start_date_and_time
+	end_date = doc.custom_actual_finish_date__time
+
+	tat_days = date_diff(end_date, start_date)
+	total_tat = tat_days + 1
+	if total_tat < 1:
+		frappe.throw("The finish date and time cannot be earlier than the start date and time.")
+
+	# Format the TAT value with "day" or "days"
+	if total_tat == 1:
+		doc.custom_tat = f"{total_tat} Day"
+	else:
+		doc.custom_tat = f"{total_tat} Days"
 
 

@@ -10,64 +10,167 @@ import base64
 
 
 class UnitCreationTool(Document):
-    # pass
-	def before_save(self):
-		self.set_unit()
-	def set_unit(self):
-			value=[]
-			all_project=frappe.db.get_all("Unit Creation Tool",{"sub_project":self.sub_project,"unit_type":self.unit_type,"name":["!=",self.name]},["name"])
-			for j in all_project:
-				sub_pro=frappe.get_doc("Unit Creation Tool",j.name)
+    def before_save(self):
+        self.update_subproject_details()
+    
+    def update_subproject_details(self):
+        if not self.sub_project:
+            return
+            
+        # Get all OTHER unit creation tools for this subproject and unit type
+        other_unit_tools = frappe.get_all("Unit Creation Tool", 
+            filters={
+                "sub_project": self.sub_project,
+                "unit_type": self.unit_type,
+                "name": ["!=", self.name],  # Exclude current document
+                "docstatus": ["!=", 2]  # Exclude cancelled documents
+            },
+            pluck="name"
+        )
+        
+        # Calculate total quantity including current doc and other tools
+        total_qty = self.calculate_total_quantity(other_unit_tools)
+        
+        # Update subproject document
+        self.update_subproject(total_qty)
+    
+    def calculate_total_quantity(self, other_unit_tools):
+        total_qty = 0
+        
+        # Add quantity from current document
+        current_qty = sum(flt(row.qty) for row in self.custom_floor_details if row.qty)
+        total_qty += current_qty
+        
+        # Add quantities from other unit tools
+        for tool_name in other_unit_tools:
+            tool_doc = frappe.get_doc("Unit Creation Tool", tool_name)
+            qty = sum(flt(row.qty) for row in tool_doc.custom_floor_details if row.qty)
+            total_qty += qty
+            
+        return total_qty
+    
+    def calculate_remaining_quantity(self):
+        """Calculate total quantity from remaining unit tools"""
+        total_qty = 0
+        other_tools = frappe.get_all("Unit Creation Tool", 
+            filters={
+                "sub_project": self.sub_project,
+                "unit_type": self.unit_type,
+                "name": ["!=", self.name],
+                "docstatus": ["!=", 2]
+            },
+            pluck="name"
+        )
+        
+        for tool_name in other_tools:
+            tool_doc = frappe.get_doc("Unit Creation Tool", tool_name)
+            qty = sum(flt(row.qty) for row in tool_doc.custom_floor_details if row.qty)
+            total_qty += qty
+            
+        return total_qty
+    
+    def calculate_remaining_saleable_area(self):
+        """Calculate total saleable area from remaining unit tools"""
+        total_area = 0
+        other_tools = frappe.get_all("Unit Creation Tool", 
+            filters={
+                "sub_project": self.sub_project,
+                "name": ["!=", self.name],
+                "docstatus": ["!=", 2]
+            },
+            fields=["name", "saleable_area"]
+        )
+        
+        for tool in other_tools:
+            tool_doc = frappe.get_doc("Unit Creation Tool", tool.name)
+            tool_qty = sum(flt(row.qty) for row in tool_doc.custom_floor_details if row.qty)
+            total_area += flt(tool.saleable_area) * tool_qty
+            
+        return total_area
+    
+    def update_subproject(self, total_qty):
+        subproject = frappe.get_doc("Sub Project", self.sub_project)
+        unit_type_updated = False
+        
+        # Update unit type quantities
+        for unit_type_row in subproject.custom_unit_type:
+            if unit_type_row.unit_type == self.unit_type:
+                unit_type_row.qty = total_qty
+                unit_type_updated = True
+                break
+        
+        # Add new unit type if not found
+        if not unit_type_updated:
+            subproject.append("custom_unit_type", {
+                "unit_type": self.unit_type,
+                "qty": total_qty
+            })
+        
+        # Calculate total saleable area
+        total_saleable_area = self.calculate_total_saleable_area()
+        subproject.custom_total_saleable_area_sq_ft = total_saleable_area
+        
+        # Save subproject
+        subproject.save(ignore_permissions=True)
+    
+    def calculate_total_saleable_area(self):
+        """Calculate total saleable area by multiplying each unit tool's saleable area with its total quantity"""
+        total_area = 0
+        
+        # Calculate area for current document
+        current_qty = sum(flt(row.qty) for row in self.custom_floor_details if row.qty)
+        total_area += flt(self.saleable_area) * current_qty
+        
+        # Get other unit tools
+        other_tools = frappe.get_all("Unit Creation Tool", 
+            filters={
+                "sub_project": self.sub_project,
+                "name": ["!=", self.name],
+                "docstatus": ["!=", 2]
+            },
+            fields=["name", "saleable_area"]
+        )
+        
+        # Calculate area for other tools
+        for tool in other_tools:
+            tool_doc = frappe.get_doc("Unit Creation Tool", tool.name)
+            tool_qty = sum(flt(row.qty) for row in tool_doc.custom_floor_details if row.qty)
+            total_area += flt(tool.saleable_area) * tool_qty
+            
+        return total_area
+    
+    def after_delete(self):
+        if not self.sub_project:
+            return
+            
+        subproject = frappe.get_doc("Sub Project", self.sub_project)
+        unit_types_to_remove = []
+        
+        # Update unit type quantities
+        for unit_type_row in subproject.custom_unit_type:
+            if unit_type_row.unit_type == self.unit_type:
+                remaining_qty = self.calculate_remaining_quantity()
+                
+                if remaining_qty > 0:
+                    unit_type_row.qty = remaining_qty
+                else:
+                    unit_types_to_remove.append(unit_type_row)
+        
+        # Remove unit types with zero quantity
+        for row in unit_types_to_remove:
+            subproject.remove(row)
+        
+        # Update total saleable area
+        remaining_area = self.calculate_remaining_saleable_area()
+        subproject.custom_total_saleable_area_sq_ft = remaining_area
+        
+        subproject.save(ignore_permissions=True)
 
-				for i in sub_pro.custom_floor_details:
-					if i.qty:
-						value.append(i.qty)
 
-
-			for i in self.custom_floor_details:
-				if i.qty:
-					value.append(i.qty)
-			if self.sub_project:
-				update=0
-				doc=frappe.get_doc("Sub Project",self.sub_project)
-				for i in doc.custom_unit_type:
-					if i.unit_type==self.unit_type:
-						update=1
-						i.qty=sum(value)
-				if update==0:
-					doc.append("custom_unit_type",{
-						"unit_type":self.unit_type,
-						"qty":sum(value)
-					})
-				saleble_area=flt(doc.custom_total_saleable_area_sq_ft)
-				doc.custom_total_saleable_area_sq_ft=saleble_area+self.saleable_area
-				doc.save(ignore_permissions=True)
-
-
-
-	def on_update(self):
-		create_unit(self)
-			
-
-	def after_delete(self):
-		value=[]
-		for i in self.custom_floor_details:
-			if i.qty:
-				value.append(i.qty)
-		if self.sub_project:
-			doc=frappe.get_doc("Sub Project",self.sub_project)
-			for i in doc.custom_unit_type:
-				if i.unit_type==self.unit_type:
-					if i.qty>sum(value):
-						i.qty-=sum(value)
-					else:
-						frappe.delete_doc("Floor Type Realty Reflex",i.name)
-			saleble_area=flt(doc.custom_total_saleable_area_sq_ft)
-			doc.custom_total_saleable_area_sq_ft=saleble_area-flt(self.saleable_area)
-			doc.save(ignore_permissions=True)
 		
     
-
+    def on_update(self):
+        create_unit(self)
 
 
 
@@ -82,12 +185,15 @@ def create_unit(doc, method=None):
     """
     if not doc.custom_floor_details:
         frappe.throw("The 'custom_floor_details' table cannot be empty.")
+		
+    name_of_unit = doc.unit_name
 
     for floor_details in doc.custom_floor_details:
         # Fetch data from the current row in custom_floor_details
         floor = floor_details.floor  # Already provided (e.g., 'Ground', '1st', '2nd')
         floor_type = floor_details.floor_type
         qty = floor_details.qty
+		
 
         if qty < 1:
             frappe.throw(f"Invalid qty {qty} for floor {floor}. Quantity must be at least 1.")
@@ -95,7 +201,7 @@ def create_unit(doc, method=None):
         # Loop through the quantity and create Unit docs
         for unit_no in range(1, qty + 1):
             # Generate unit number dynamically based on the floor and unit number
-            generated_unit_no = f"{floor} Floor {get_unit_name(unit_no)}"  # This is the "Unit No" field for each unit
+            generated_unit_no = f"{name_of_unit}-{floor} Floor {get_unit_name(unit_no)}"  # This is the "Unit No" field for each unit
             
             # Check for duplicate Unit records (Unit Creation Tool and Unit No)
             if frappe.db.exists("Unit", {"unit_creation_tool": doc.name, "unit_no": generated_unit_no}):
