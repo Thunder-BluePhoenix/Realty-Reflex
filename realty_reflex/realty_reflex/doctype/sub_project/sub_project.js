@@ -20,10 +20,26 @@ frappe.ui.form.on('Sub Project', {
         frm.set_df_property('custom_revisions', 'cannot_add_rows', true);
         frm.set_df_property('custom_revisions', 'cannot_delete_rows', true);
         frm.add_custom_button(
+            __("Unit Creation Tool"),
+            function () {
+              var sub_project = frm.doc.name;
+              frappe.set_route("List", "Unit Creation Tool", {"sub_project": sub_project});
+            },
+            __("View")
+          );
+        frm.add_custom_button(
+            __("Project"),
+            function () {
+              var project = frm.doc.project;
+              frappe.set_route("Form", "Project", project);
+            },
+            __("View")
+          );
+          frm.add_custom_button(
             __("Unit"),
             function () {
-              var tower_code = frm.doc.tower_code;
-              frappe.set_route("List", "Unit", {"sub_project": tower_code});
+              var sub_project = frm.doc.name;
+              frappe.set_route("List", "Unit", {"sub_project": sub_project});
             },
             __("View")
           );
@@ -196,27 +212,36 @@ frappe.ui.form.on('Task Revisions', {
 
 
 frappe.ui.form.on('Sub Project', {
-
     refresh: function (frm) {
-      if (frm.doc.__islocal) {
-        return;
-      }
-      setTimeout(function() {
-        
-      frm.add_custom_button('Create Unit Creation Tool', function () {
-        // Fetch the unit name from the current Unit document
-        var project_name = frm.doc.project;
-        var sub_project = frm.doc.name
-        console.log(project_name, "project_name");
-        frappe.new_doc('Unit', {
-          'project_name': project_name,
-          'sub_project':sub_project
-        });
-      });
-    }, 500); 
-      
+        if (frm.doc.__islocal) {
+            return;
+        }
+
+        setTimeout(function () {
+            frm.add_custom_button('Create Unit Creation Tool', function () {
+                frappe.call({
+                    method: "realty_reflex.realty_reflex.doctype.sub_project.sub_project.prepare_unit_creation_tool",
+                    args: {
+                        sub_project_name: frm.doc.name
+                    },
+                    callback: function (response) {
+                        if (response.message) {
+                            // Route to the new document
+                            frappe.model.with_doctype('Unit Creation Tool', function () {
+                                const new_doc = frappe.model.sync(response.message)[0];
+                                frappe.set_route('Form', 'Unit Creation Tool', new_doc.name);
+                            });
+                        }
+                    }
+                });
+            });
+        }, 500);
     }
-  });
+});
+
+
+
+ 
 
 
 
@@ -738,9 +763,9 @@ function handleFileUpload(event) {
 }
 
 function downloadSampleCsv() {
-    const csvContent = `data:text/csv;charset=utf-8,project_id,tower_id,floor,unit_unique_id,unit__appartment_no,unit_type,hold_release,land_area,saleable_area,common_area,dimensions,garden_area,terrace_area,carpet_area,landplot_area,built_up_area,rera_area,remarks,
-PROJ-0001,T-A,Ground,101,A1,1BHK,Release,500,400,100,10x20,50,30,150,200,250,300,First unit remarks,
-PROJ-0001,T-A,Ground,102,A2,2BHK,Hold,600,500,100,12x25,60,40,200,250,300,350,Second unit remarks`;
+    const csvContent = `data:text/csv;charset=utf-8,project_id,tower_id,floor,unit_unique_id,unit_type,hold_release,land_area,saleable_area,common_area,dimensions,garden_area,terrace_area,carpet_area,landplot_area,built_up_area,rera_area,remarks,
+PROJ-0001,T-A,Ground,101,1BHK,Release,500,400,100,10x20,50,30,150,200,250,300,First unit remarks,
+PROJ-0001,T-A,Ground,102,2BHK,Hold,600,500,100,12x25,60,40,200,250,300,350,Second unit remarks`;
 
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
