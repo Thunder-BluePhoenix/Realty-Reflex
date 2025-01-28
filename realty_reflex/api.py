@@ -172,8 +172,19 @@ def unlock_project_tasks(project):
 
 @frappe.whitelist()
 def get_task_value(project):
-    tasks=[]
-    tasks_list=frappe.db.get_all("Task",{"project":project},["name"])
+    tasks_list = frappe.db.get_all(
+        "Task",
+        filters={"project": project},
+        fields=[
+            "name",
+            "custom_release_budget_type",
+            "custom_release_amount",
+            "custom_release_allocated_amount",
+            "custom_substatus",
+            "custom_total_budget_allocated"
+        ]
+    )
     return tasks_list
+
     # for task in tasks_list:
     #     pass
