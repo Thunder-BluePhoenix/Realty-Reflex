@@ -18,18 +18,18 @@ frappe.ui.form.on('Task', {
         // Remove add/delete buttons from the grid
         frm.set_df_property('custom_revisions', 'cannot_add_rows', true);
         frm.set_df_property('custom_revisions', 'cannot_delete_rows', true);
-        if (frm.doc.custom_wbs_status == "Locked") {
-            frm.set_df_property('custom_budget_type', 'read_only', 1); // Replace with actual field name
-            frm.set_df_property('custom_builtup_area', 'read_only', 1);
-            frm.set_df_property('custom_rate', 'read_only', 1); // Replace with actual field name
-            frm.set_df_property('custom_total_budget_allocated', 'read_only', 1);
-            frm.set_df_property('custom_allocated_amount', 'read_only', 1); // Replace with actual field name
-            frm.set_df_property('custom_remark', 'read_only', 1);
-            frm.set_df_property('custom_attach', 'read_only', 1);
-            frm.set_df_property('custom_pending_amount', 'read_only', 1);
+        // if (frm.doc.custom_wbs_status == "Locked") {
+        //     frm.set_df_property('custom_budget_type', 'read_only', 1); // Replace with actual field name
+        //     frm.set_df_property('custom_builtup_area', 'read_only', 1);
+        //     frm.set_df_property('custom_rate', 'read_only', 1); // Replace with actual field name
+        //     frm.set_df_property('custom_total_budget_allocated', 'read_only', 1);
+        //     frm.set_df_property('custom_allocated_amount', 'read_only', 1); // Replace with actual field name
+        //     frm.set_df_property('custom_remark', 'read_only', 1);
+        //     frm.set_df_property('custom_attach', 'read_only', 1);
+        //     frm.set_df_property('custom_pending_amount', 'read_only', 1);
             
-            frm.refresh_fields();
-        }
+        //     frm.refresh_fields();
+        // }
     }
 });
 

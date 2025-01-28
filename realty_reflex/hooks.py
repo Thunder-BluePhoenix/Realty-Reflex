@@ -157,10 +157,13 @@ doctype_tree_js = {"Task" : "public/js/wbss.js"}
 # 	}
 # }
 doc_events = {
-    "Task" : {"before_save":[
-                             "realty_reflex.overrides.task.before_save"],
+    "Task" : {
+        "before_save":[
+                             "realty_reflex.overrides.task.before_save",
+                             "realty_reflex.api.release_version"],
               "on_update":["realty_reflex.overrides.task.on_update",
-                           "realty_reflex.overrides.task.allocated_amount_validation"]},
+                           "realty_reflex.overrides.task.allocated_amount_validation",
+                           ]},
 
     "Project": {"onload":"realty_reflex.overrides.project.onload",
                 "on_trash":"realty_reflex.overrides.project.on_trash"}

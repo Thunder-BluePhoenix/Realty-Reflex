@@ -65,70 +65,62 @@ frappe.treeview_settings["Task"] = {
             __("Release"),
             function () {
 				const project = me.page.fields_dict.project.get_value();
+                frappe.new_doc('Budget Release', {
+                    'project': project
+                  });
 
-
-				frappe.call({
-					method: "realty_reflex.api.release_version",
-					args: {
-						project: project,
-					},
-					callback: function (response) {
-						frappe.msgprint(__("Budget is Released."));
-						me.make_tree(); // Refresh the tree to reflect changes
-					},
-				});
 				
 			}
         );
 		
-        me.page.add_inner_button(
-            __("Lock"),
-            function () {
-				const project = me.page.fields_dict.project.get_value();
+        // me.page.add_inner_button(
+        //     __("Lock"),
+        //     function () {
+		// 		const project = me.page.fields_dict.project.get_value();
 
-				if (!project) {
-					frappe.msgprint(__("Please select a project first"));
-					return;
-				}
+		// 		if (!project) {
+		// 			frappe.msgprint(__("Please select a project first"));
+		// 			return;
+		// 		}
 		
-				frappe.call({
-					method: "realty_reflex.api.lock_project_tasks",
-					args: {
-						project: project,
-					},
-					callback: function (response) {
-						frappe.msgprint(__("All tasks have been locked"));
-						me.make_tree(); // Refresh the tree to reflect changes
-					},
-				});
+		// 		frappe.call({
+		// 			method: "realty_reflex.api.lock_project_tasks",
+		// 			args: {
+		// 				project: project,
+		// 			},
+		// 			callback: function (response) {
+		// 				frappe.msgprint(__("All tasks have been locked"));
+		// 				me.make_tree(); // Refresh the tree to reflect changes
+		// 			},
+		// 		});
 				
-			}
-        );
-        me.page.add_inner_button(
-            __("Unlock"),
-            function () {
-				const project = me.page.fields_dict.project.get_value();
+		// 	}
+        // );
+        // me.page.add_inner_button(
+        //     __("Unlock"),
+        //     function () {
+		// 		const project = me.page.fields_dict.project.get_value();
 
 
-				if (!project) {
-					frappe.msgprint(__("Please select a project first"));
-					return;
-				}
+		// 		if (!project) {
+		// 			frappe.msgprint(__("Please select a project first"));
+		// 			return;
+		// 		}
 		
-				frappe.call({
-					method: "realty_reflex.api.lock_project_tasks",
-					args: {
-						project: project,
-					},
-					callback: function (response) {
-						frappe.msgprint(__("All tasks have been locked"));
-						me.make_tree(); // Refresh the tree to reflect changes
-					},
-				});
+		// 		frappe.call({
+		// 			method: "realty_reflex.api.lock_project_tasks",
+		// 			args: {
+		// 				project: project,
+		// 			},
+		// 			callback: function (response) {
+		// 				frappe.msgprint(__("All tasks have been locked"));
+		// 				me.make_tree(); // Refresh the tree to reflect changes
+		// 			},
+		// 		});
 				
 			
-			}
-        );
+		// 	}
+        // );
 
         frappe.treeview_settings["Task"].page = {};
         $.extend(frappe.treeview_settings["Task"].page, me.page);

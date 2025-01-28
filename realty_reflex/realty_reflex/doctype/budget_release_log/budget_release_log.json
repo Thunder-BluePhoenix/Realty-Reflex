@@ -1,12 +1,18 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "format:RE-{project}-{######}",
  "creation": "2025-01-15 17:23:55.557101",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "project",
-  "task_dict"
+  "status",
+  "task_dict",
+  "task_list",
+  "changed_task",
+  "approved_task",
+  "staged_tasks"
  ],
  "fields": [
   {
@@ -20,14 +26,50 @@
    "fieldtype": "Text",
    "label": "Task Dict",
    "read_only": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "\nApproved\nRejected"
+  },
+  {
+   "fieldname": "task_list",
+   "fieldtype": "Text",
+   "hidden": 1,
+   "label": "Task list",
+   "read_only": 1
+  },
+  {
+   "fieldname": "changed_task",
+   "fieldtype": "Text",
+   "hidden": 1,
+   "label": "Changed Task",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approved_task",
+   "fieldtype": "Text",
+   "hidden": 1,
+   "label": "Approved Task",
+   "read_only": 1
+  },
+  {
+   "fieldname": "staged_tasks",
+   "fieldtype": "Text",
+   "hidden": 1,
+   "label": "Staged Tasks",
+   "read_only": 1
   }
  ],
+ "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-15 21:29:06.753307",
+ "modified": "2025-01-28 17:54:21.332421",
  "modified_by": "Administrator",
  "module": "Realty Reflex",
  "name": "Budget Release Log",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

@@ -1,0 +1,93 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-01-24 15:51:42.011486",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "project",
+  "fetch_tasks",
+  "section_break_gqqg",
+  "changed_tasks",
+  "section_break_dkxz",
+  "staged_tasks",
+  "section_break_slbq",
+  "data_qfsz",
+  "column_break_hwcx",
+  "release"
+ ],
+ "fields": [
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "Project"
+  },
+  {
+   "fieldname": "fetch_tasks",
+   "fieldtype": "Button",
+   "label": "Fetch Tasks"
+  },
+  {
+   "fieldname": "section_break_gqqg",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "changed_tasks",
+   "fieldtype": "Table",
+   "label": "Changed Tasks",
+   "options": "Changed Tasks"
+  },
+  {
+   "fieldname": "section_break_dkxz",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "staged_tasks",
+   "fieldtype": "Table",
+   "label": "Staged Tasks",
+   "options": "Staged Tasks"
+  },
+  {
+   "fieldname": "section_break_slbq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "data_qfsz",
+   "fieldtype": "Data",
+   "hidden": 1
+  },
+  {
+   "fieldname": "column_break_hwcx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "release",
+   "fieldtype": "Button",
+   "label": "Release"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2025-01-28 16:57:52.002619",
+ "modified_by": "Administrator",
+ "module": "Realty Reflex",
+ "name": "Budget Release",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
