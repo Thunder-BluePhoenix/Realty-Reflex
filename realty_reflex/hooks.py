@@ -166,7 +166,9 @@ doc_events = {
                            ]},
 
     "Project": {"onload":"realty_reflex.overrides.project.onload",
-                "on_trash":"realty_reflex.overrides.project.on_trash"}
+                "on_trash":"realty_reflex.overrides.project.on_trash"},
+
+    "User": {"on_update":"realty_reflex.overrides.user.send_welcome_mail"}
 
 }
 
