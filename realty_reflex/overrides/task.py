@@ -3,6 +3,7 @@ from frappe import _
 from frappe.model.document import Document
 import json
 from frappe.utils import now_datetime
+from frappe.utils import date_diff, nowdate
 
 
 
@@ -21,6 +22,7 @@ def before_save(doc, method = None):
             doc.custom_pending_amount =  amo - allocated_amo
 
     data_long_text(doc, method)
+    calculate_tat(doc, method)
     # update_revision(doc, method = None)
 
 
@@ -217,3 +219,28 @@ def get_items_by_item_group(item_group_id):
 
 
 
+@frappe.whitelist()
+def calculate_tat(doc, method):
+	"""
+	Calculate the Turnaround Time (TAT) in days between the start and end date-time fields
+	and update the custom_tat field in the Sub Project doctype.
+	"""
+	# Ensure the required fields are present
+	if not doc.custom_actual_start_date_and_time or not doc.custom_actual_finish_date__time:
+		doc.custom_tat = None  # Clear the field if dates are not provided
+		return
+
+	# Calculate the difference in days
+	start_date = doc.custom_actual_start_date_and_time
+	end_date = doc.custom_actual_finish_date__time
+
+	tat_days = date_diff(end_date, start_date)
+	total_tat = tat_days + 1
+	if total_tat < 1:
+		frappe.throw("The finish date and time cannot be earlier than the start date and time.")
+
+	# Format the TAT value with "day" or "days"
+	if total_tat == 1:
+		doc.custom_tat = f"{total_tat} Day"
+	else:
+		doc.custom_tat = f"{total_tat} Days"
