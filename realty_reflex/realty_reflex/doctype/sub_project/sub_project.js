@@ -43,6 +43,15 @@ frappe.ui.form.on('Sub Project', {
             },
             __("View")
           );
+          frm.add_custom_button(
+            __("WBS"),
+            function () {
+              console.log(frm.doc.project)
+              frappe.set_route("Tree", "Task", {"project": frm.doc.project});
+              frappe.project_selector.current_project = frm.doc.project;
+            },
+            __("View")
+          );
         frm.add_custom_button(
         __("WBS"),
         function () {

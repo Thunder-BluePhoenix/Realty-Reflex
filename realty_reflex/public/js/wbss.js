@@ -328,7 +328,7 @@ frappe.treeview_settings["Task"] = {
             options: "Project",
             label: __("Project"),
             reqd: 1,
-            default: frappe.project_selector.current_project,
+            default: frappe.project_selector.current_project || "",
             on_change: function() {
                 cur_tree.args.project = this.value;
                 cur_tree.make_tree();
