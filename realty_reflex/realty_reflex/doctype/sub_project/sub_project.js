@@ -265,7 +265,7 @@ frappe.ui.form.on('Sub Project', {
                     <div class="flex-spacer"></div>
                     <div class="right-buttons">
                         <button class="upload-csv-btn">Upload CSV</button>
-                        <button class="download-sample-csv-btn">Download Sample CSV</button>
+                        <button class="download-sample-csv-btn">Download CSV</button>
                         <input type="file" accept=".csv" class="hidden-file-input" style="display: none;">
                     </div>
                 </div>
@@ -305,6 +305,7 @@ frappe.ui.form.on('Sub Project', {
                             <tr>
                                 <th class="checkbox-col"><input type="checkbox" class="select-all-checkbox"> Fl.no</th>
                                 <th>Unit</th>
+                                <th>Unit Name</th>
                                 <th>Sale Area</th>
                                 <th>Carpet Area</th>
                                 <th>Terrace Area</th>
@@ -628,9 +629,10 @@ function initializeUnitManagement(frm) {
                 <td>
                     <input type="checkbox" class="unit-checkbox" data-unit="${unit.name}"
                            ${selectedUnits.has(unit.name) ? 'checked' : ''}>
-                    ${frappe.utils.escape_html(unit.unit_name || '')}
+                    ${frappe.utils.escape_html(unit.flat_no || '')}
                 </td>
                 <td>${frappe.utils.escape_html(unit.unit_type || '')}</td>
+                <td>${frappe.utils.escape_html(unit.unit_name || '')}</td>
                 <td>${formatNumber(unit.saleable_area || '0')}</td>
                 <td>${formatNumber(unit.carpet_area || '0')}</td>
                 <td>${formatNumber(unit.terrace_area || '0')}</td>
@@ -752,7 +754,7 @@ function handleFileUpload(event) {
         reader.onload = function(e) {
             const base64Data = e.target.result.split(',')[1];
             frappe.call({
-                method: 'realty_reflex.overrides.task_stock_custom.create_units_from_csv',
+                method: 'realty_reflex.overrides.task_stock_custom.update_units_from_csv',
                 args: {
                     filedata: base64Data
                 },
@@ -772,18 +774,43 @@ function handleFileUpload(event) {
 }
 
 function downloadSampleCsv() {
-    const csvContent = `data:text/csv;charset=utf-8,project_id,tower_id,floor,unit_unique_id,unit_type,hold_release,land_area,saleable_area,common_area,dimensions,garden_area,terrace_area,carpet_area,landplot_area,built_up_area,rera_area,remarks,
-PROJ-0001,T-A,Ground,101,1BHK,Release,500,400,100,10x20,50,30,150,200,250,300,First unit remarks,
-PROJ-0001,T-A,Ground,102,2BHK,Hold,600,500,100,12x25,60,40,200,250,300,350,Second unit remarks`;
+    const csvHeader = `Fl.no,Unit,Unit Name,Sale Area,Carpet Area,Terrace Area,Built-up Area,Common Area,Unit Status,Hold/Release\n`;
+    let csvRows = [];
 
+    document.querySelectorAll(".units-table tbody tr").forEach(row => {
+        const columns = row.querySelectorAll("td");
+
+        // Extract data in the correct order based on table structure
+        const rowData = [
+            columns[0]?.textContent.trim() || "",  // Fl.no
+            columns[1]?.textContent.trim() || "",  // Unit
+            columns[2]?.textContent.trim() || "",  // Unit Name
+            columns[3]?.textContent.trim() || "",  // Sale Area
+            columns[4]?.textContent.trim() || "",  // Carpet Area
+            columns[5]?.textContent.trim() || "",  // Terrace Area
+            columns[6]?.textContent.trim() || "",  // Built-up Area
+            columns[7]?.textContent.trim() || "",  // Common Area
+            columns[8]?.textContent.trim() || "",  // Unit Status
+            columns[9]?.textContent.trim() || ""   // Hold/Release
+        ].map(value => value ? `"${value.replace(/"/g, '""')}"` : `""`); // Ensure correct CSV format
+
+        csvRows.push(rowData.join(","));
+    });
+
+    const csvContent = `data:text/csv;charset=utf-8,` + csvHeader + csvRows.join("\n");
     const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', 'sample_units.csv');
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "units_data.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 }
+
+
+
+
+
 
 // Initial load
 loadUnitsData();
