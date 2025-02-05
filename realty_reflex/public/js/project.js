@@ -81,6 +81,7 @@ frappe.ui.form.on('Project', {
         frm.remove_custom_button('Create tower');
         frm.remove_custom_button('Tower', 'View');
         frm.remove_custom_button('Stock', 'View');
+        frm.remove_custom_button('Set Project Status', 'Actions');
   
   
         // Add custom button to create a Sub-Project

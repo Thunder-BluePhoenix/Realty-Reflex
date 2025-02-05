@@ -20,6 +20,7 @@
   "custom_plc_applicable",
   "column_break_h4lq6",
   "unit_name",
+  "flat_no",
   "uom",
   "unit_type",
   "mandatory_car_park",
@@ -90,7 +91,8 @@
    "fieldname": "floor_type",
    "fieldtype": "Select",
    "label": "Floor Type",
-   "options": "Normal Floor\nPenthouse\nMezzaine Floor\nNormal\nPodium"
+   "options": "Normal Floor\nPenthouse\nMezzaine Floor\nNormal\nPodium",
+   "read_only": 1
   },
   {
    "fieldname": "udi",
@@ -370,7 +372,7 @@
    "fieldname": "unit_name",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Unit /Appartment No.",
+   "label": "Unit Name",
    "reqd": 1,
    "unique": 1
   },
@@ -393,11 +395,16 @@
    "fieldtype": "Data",
    "hidden": 1,
    "label": "Unit No."
+  },
+  {
+   "fieldname": "flat_no",
+   "fieldtype": "Data",
+   "label": "Unit /Appartment No."
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-18 03:09:19.754944",
+ "modified": "2025-02-05 14:07:36.615666",
  "modified_by": "Administrator",
  "module": "Realty Reflex",
  "name": "Unit",
