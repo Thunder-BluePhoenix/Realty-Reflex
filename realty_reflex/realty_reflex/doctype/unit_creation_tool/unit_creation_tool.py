@@ -180,82 +180,109 @@ def create_unit(doc, method=None):
     """
     Before saving the Unit Creation Tool document:
     - Process each row in the custom_floor_details table.
-    - Create Unit documents based on the qty field in each row.
+    - Create, update, or delete Unit documents based on the qty field in each row.
     - Validate for duplication before creating the Unit documents.
     """
     if not doc.custom_floor_details:
         frappe.throw("The 'custom_floor_details' table cannot be empty.")
-		
+
     name_of_unit = doc.unit_name
 
     for floor_details in doc.custom_floor_details:
-        # Fetch data from the current row in custom_floor_details
-        floor = floor_details.floor  # Already provided (e.g., 'Ground', '1st', '2nd')
+        floor = floor_details.floor
         floor_type = floor_details.floor_type
-        qty = floor_details.qty
-		
+        new_qty = floor_details.qty  # New quantity after update
 
-        if qty < 1:
-            frappe.throw(f"Invalid qty {qty} for floor {floor}. Quantity must be at least 1.")
+        if new_qty < 1:
+            frappe.throw(f"Invalid qty {new_qty} for floor {floor}. Quantity must be at least 1.")
 
-        # Loop through the quantity and create Unit docs
-        for unit_no in range(1, qty + 1):
-            # Generate unit number dynamically based on the floor and unit number
-            generated_unit_no = f"{name_of_unit}-{floor} Floor {get_unit_name(unit_no)}"  # This is the "Unit No" field for each unit
-            
-            # Check for duplicate Unit records (Unit Creation Tool and Unit No)
-            if frappe.db.exists("Unit", {"unit_creation_tool": doc.name, "unit_no": generated_unit_no}):
-                # If the Unit already exists, skip creating this unit and continue to the next one
-                frappe.log_error(f"Skipping creation of Unit '{generated_unit_no}' as it already exists.")
-                continue
+        # Fetch existing unit documents for this floor
+        existing_units = frappe.get_all(
+            "Unit",
+            filters={"unit_creation_tool": doc.name, "floor": floor},
+            fields=["name", "unit_no"]
+        )
+        
+        existing_unit_nos = {unit["unit_no"]: unit["name"] for unit in existing_units}  # Mapping of unit_no to doc name
 
-            # Create the Unit document
-            unit_doc = frappe.get_doc({
-                "doctype": "Unit",
-                "project_name": doc.project_name,
-                "unit_name": generated_unit_no,  # Use unit__appartment_no for the unit name
-                "unit_type": doc.unit_type,
-                "mandatory_car_park": doc.mandatory_car_park,
-                "sub_project": doc.sub_project,
-                "status": doc.status,
-                "custom_holdrelease": doc.custom_holdrelease,
-                "custom_sub_project_name": doc.custom_sub_project_name,
-                "unit_creation_tool": doc.name,
-                "land_area": doc.land_area,
-                "terrace_area": doc.terrace_area,
-                "garden_area": doc.garden_area,
-                "rera_area": doc.rera_area,
-                "common_area": doc.common_area,
-                "carpet_area": doc.carpet_area,
-                "landplot_area": doc.landplot_area,
-                "saleable_area": doc.saleable_area,
-                "porche_area": doc.porche_area,
-                "built_up_area": doc.built_up_area,
-                "dimensions": doc.dimensions,
-                "remarks": doc.remarks,
-                "custom_plc_applicable": doc.custom_plc_applicable,
-                "udi": doc.udi,
-                "floor": floor,
-                "floor_type": floor_type,
-                "unit_no": generated_unit_no,  # Dynamically created Unit No
-            })
+        # Create or update units up to new_qty
+        for unit_no in range(1, new_qty + 1):
+            generated_unit_no = f"{name_of_unit}-{floor} Floor {get_unit_name(unit_no)}"
 
-            # Insert the Unit document into the database
-            unit_doc.insert(ignore_permissions=True)
+            if generated_unit_no in existing_unit_nos:
+                # Update existing unit
+                existing_unit = frappe.get_doc("Unit", existing_unit_nos[generated_unit_no])
+                update_unit_fields(existing_unit, doc)
+                existing_unit.save(ignore_permissions=True)
+                frappe.log_error(f"Updated Unit: {generated_unit_no} for Floor: {floor}")
+            else:
+                # Create new unit
+                unit_doc = frappe.get_doc({
+                    "doctype": "Unit",
+                    "project_name": doc.project_name,
+                    "unit_name": generated_unit_no,
+                    "unit_type": doc.unit_type,
+                    "mandatory_car_park": doc.mandatory_car_park,
+                    "sub_project": doc.sub_project,
+                    "status": doc.status,
+                    "custom_holdrelease": doc.custom_holdrelease,
+                    "custom_sub_project_name": doc.custom_sub_project_name,
+                    "unit_creation_tool": doc.name,
+                    "land_area": doc.land_area,
+                    "terrace_area": doc.terrace_area,
+                    "garden_area": doc.garden_area,
+                    "rera_area": doc.rera_area,
+                    "common_area": doc.common_area,
+                    "carpet_area": doc.carpet_area,
+                    "landplot_area": doc.landplot_area,
+                    "saleable_area": doc.saleable_area,
+                    "porche_area": doc.porche_area,
+                    "built_up_area": doc.built_up_area,
+                    "dimensions": doc.dimensions,
+                    "remarks": doc.remarks,
+                    "custom_plc_applicable": doc.custom_plc_applicable,
+                    "udi": doc.udi,
+                    "floor": floor,
+                    "floor_type": floor_type,
+                    "unit_no": generated_unit_no,
+                })
+                unit_doc.insert(ignore_permissions=True)
+                frappe.log_error(f"Created Unit: {generated_unit_no} for Floor: {floor}")
 
-            # Log the created unit
-            frappe.log_error(f"Created Unit: {generated_unit_no} for Floor: {floor}")
+        # Delete extra units if qty is reduced
+        extra_units = [unit_no for unit_no in existing_unit_nos if int(unit_no.split(" ")[-2][:-2]) > new_qty]
 
-    # After processing all floors, save the updated document with the child table
-    # doc.save()
+        for unit_no in extra_units:
+            frappe.delete_doc("Unit", existing_unit_nos[unit_no], force=True)
+            frappe.log_error(f"Deleted Unit: {unit_no} for Floor: {floor}")
 
+def update_unit_fields(unit_doc, doc):
+    """ Update existing unit fields """
+    unit_doc.unit_creation_tool = doc.name
+    unit_doc.land_area = doc.land_area
+    unit_doc.terrace_area = doc.terrace_area
+    unit_doc.garden_area = doc.garden_area
+    unit_doc.rera_area = doc.rera_area
+    unit_doc.common_area = doc.common_area
+    unit_doc.carpet_area = doc.carpet_area
+    unit_doc.landplot_area = doc.landplot_area
+    unit_doc.saleable_area = doc.saleable_area
+    unit_doc.porche_area = doc.porche_area
+    unit_doc.built_up_area = doc.built_up_area
+    unit_doc.dimensions = doc.dimensions
+    unit_doc.remarks = doc.remarks
+    unit_doc.custom_plc_applicable = doc.custom_plc_applicable
+    unit_doc.udi = doc.udi
+    unit_doc.mandatory_car_park = doc.mandatory_car_park
 
 def get_unit_name(unit_no):
-    
-    if 10 <= unit_no % 100 <= 20:  # Special case for 11th, 12th, 13th, etc.
+    """ Generate a readable unit number with suffixes (1st, 2nd, 3rd, etc.) """
+    if 10 <= unit_no % 100 <= 20:
         suffix = "th"
     else:
         suffix = {1: "st", 2: "nd", 3: "rd"}.get(unit_no % 10, "th")
     return f"{unit_no}{suffix} unit"
+
+
 
 

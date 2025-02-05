@@ -28,5 +28,30 @@ frappe.ui.form.on("Unit Creation Tool", {
             },
             __("View")
         );
+        frm.add_custom_button(
+            __("Units"),
+            function () {
+                var unit_creation_tool = frm.doc.name;
+                frappe.set_route("List", "Unit");
+                let checkFilters = setInterval(() => {
+                    let list_view = cur_list;
+        
+                    if (list_view && list_view.filter_area) {
+                        clearInterval(checkFilters);
+                        setTimeout(() => {
+                            let existing_filters = list_view.filter_area.get();
+                            let isFilterApplied = existing_filters.some(f => f[1] === "unit_creation_tool" && f[3] === unit_creation_tool);
+        
+                            if (!isFilterApplied) {
+                            
+                                list_view.filter_area.add([[ "Unit", "unit_creation_tool", "=", unit_creation_tool ]]);
+                                list_view.refresh();
+                            }
+                        }, 500); 
+                    }
+                }, 200); 
+            },
+            __("View")
+        );
     },
 });
