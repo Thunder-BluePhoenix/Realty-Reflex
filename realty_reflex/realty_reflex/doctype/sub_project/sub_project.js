@@ -64,6 +64,12 @@ frappe.ui.form.on('Sub Project', {
                         fieldtype: 'Link',
                         options: 'WBS Template'
                     },
+                    {
+                        label: 'Skip',
+                        fieldname: 'skip',
+                        fieldtype: 'Check'
+                       
+                    }
                     
                 ],
                 size: 'large', // small, large, extra-large 

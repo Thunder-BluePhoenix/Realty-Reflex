@@ -154,30 +154,32 @@ def update_revision(self, method = None):
 
 @frappe.whitelist()
 def create_group_task(values, project):
-    try:
-        data = json.loads(values)  # Safely parse JSON
-        template_name = data.get("template")
-        if not template_name:
-            frappe.throw("Template is required")
-        
-        doc = frappe.get_doc("WBS Template", template_name)
-        tasks = {task.task_id: task for task in doc.tasks}  # Index tasks by task_id
-        
-        for task_id, task_data in tasks.items():
-            if task_data.is_group and not task_data.parent_task:
-                # Create root-level group tasks
-                task = frappe.new_doc("Task")
-                task.subject = task_data.subject
-                task.project = project
-                task.is_group = task_data.is_group
-                task.save(ignore_permissions=True)
-                
-                # Build the task tree
-                build_task_tree(task.name, task_data.task_id, tasks, project)
-        return True
-    except Exception as e:
-        frappe.log_error(frappe.get_traceback(), "Create Group Task Failed")
-        frappe.throw(str(e))
+	try:
+		data = json.loads(values)  # Safely parse JSON
+		if data.get("skip")==1:
+			return True
+		template_name = data.get("template")
+		if not template_name:
+			frappe.throw("Template is required")
+		
+		doc = frappe.get_doc("WBS Template", template_name)
+		tasks = {task.task_id: task for task in doc.tasks}  # Index tasks by task_id
+		
+		for task_id, task_data in tasks.items():
+			if task_data.is_group and not task_data.parent_task:
+				# Create root-level group tasks
+				task = frappe.new_doc("Task")
+				task.subject = task_data.subject
+				task.project = project
+				task.is_group = task_data.is_group
+				task.save(ignore_permissions=True)
+				
+				# Build the task tree
+				build_task_tree(task.name, task_data.task_id, tasks, project)
+		return True
+	except Exception as e:
+		frappe.log_error(frappe.get_traceback(), "Create Group Task Failed")
+		frappe.throw(str(e))
 
 def build_task_tree(parent_task_name, parent_task_id, tasks, project):
     for task_id, task_data in tasks.items():
