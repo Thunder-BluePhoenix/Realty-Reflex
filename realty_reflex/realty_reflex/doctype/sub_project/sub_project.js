@@ -655,15 +655,12 @@ function initializeUnitManagement(frm) {
 
         frappe.call({
             
-            method: 'frappe.client.get_list',
+            method: 'realty_reflex.realty_reflex.doctype.sub_project.sub_project.get_all_units',
             args: {
-                doctype: 'Unit',
-                filters: {
+          
                     project_name: frm.doc.project,
                     sub_project: frm.doc.name
-                },
-                fields: ['*'],
-                limit: 1000
+           
                 
             },
             
