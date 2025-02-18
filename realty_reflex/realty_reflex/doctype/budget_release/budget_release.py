@@ -69,7 +69,6 @@ class BudgetRelease(Document):
 
 	@frappe.whitelist()
 	def stage_changes(self,changed_tasks):
-		print("$$$$$$$$$$$$$$$$$$$$",changed_tasks)
 		stage_task=[]
 		value=0
 		for i in changed_tasks:
@@ -117,6 +116,8 @@ class BudgetRelease(Document):
 		br=frappe.db.get_value("Budget Release Log",{"project":self.project,"status":["!=","Approved"]},"name")
 		if br:
 			doc=frappe.get_doc("Budget Release Log",br)
+			if doc.staged_tasks:
+				stage_task=eval(doc.staged_tasks)+stage_task
 			doc.staged_tasks=str(stage_task)
 			doc.save(ignore_permissions=True)
 
@@ -141,8 +142,47 @@ class BudgetRelease(Document):
 			
 		br=frappe.db.get_value("Budget Release Log",{"project":self.project,"status":["!=","Approved"]},"name")
 		if br:
-			doc=frappe.get_doc("Budget Release Log",br)	
-			doc.approved_task=str(stage_task)
+			doc=frappe.get_doc("Budget Release Log",br)
+			if doc.approved_task:
+				approved_task=eval(doc.approved_task)+stage_task
+			doc.approved_task=str(approved_task)
 			doc.save(ignore_permissions=True)
 			frappe.msgprint("Budget release sucessfully")
+
+	@frappe.whitelist()
+	def unstaged_changes(self,staged_tasks):
+		stage=[]
+		for i in staged_tasks:
+			if i.get("__checked")==1:
+				task=frappe.get_doc("Task",i.get("task"))
+				self.append("changed_tasks",{
+					"task":i.get("task"),
+					"task_name":task.get("subject"),
+					"budget_type":task.custom_release_budget_type,
+					"built_up_area":task.custom_release_builtup_area,
+					"rate":task.custom_release_rate,
+					"total":task.custom_release_amount,
+					"allocated_amount":task.custom_release_allocated_amount,
+					"pending_amount":task.custom_release_pending_amount,
+					"remarks":task.custom_release_remarks,
+					"changed_budget_type":task.custom_budget_type,
+					"changed_built_up_area":task.custom_builtup_area,
+					"changed_rate":task.custom_rate,
+					"changed_total":task.custom_total_budget_allocated,
+					"changed_allocated_amount":task.custom_allocated_amount,
+					"changed_pending_amount":task.custom_pending_amount,
+					"changed_remarks":task.custom_remark,
+				})
+			else:
+				stage.append(i)
+		br=frappe.db.get_value("Budget Release Log",{"project":self.project,"status":["!=","Approved"]},"name")
+		if br:
+			doc=frappe.get_doc("Budget Release Log",br)
+			doc.staged_tasks=str(stage)
+			doc.save(ignore_permissions=True)
+			# self.get_changed_tasks()
+
+			frappe.msgprint("unstaged Sucessfully")
+			
+	
 

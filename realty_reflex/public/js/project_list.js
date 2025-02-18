@@ -48,9 +48,8 @@ frappe.listview_settings['Project'] = {
 
             dialog.$wrapper.find('.btn-view-wbs').on('click', () => {
                 dialog.hide();
-                // frappe.set_route('List', 'Task', {
-                //     project: doc.name
-                // });
+                frappe.set_route("Tree", "Task", {"project": frm.doc.project});
+                frappe.project_selector.current_project = frm.doc.project;
             });
         }
     }

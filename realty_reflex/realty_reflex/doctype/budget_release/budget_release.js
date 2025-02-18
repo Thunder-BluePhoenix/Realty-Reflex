@@ -19,8 +19,25 @@ frappe.ui.form.on("Budget Release", {
                 }
             });
         })
+        frm.add_custom_button(__('Unstaged'), function() {
+            frappe.call({
+                method: "unstaged_changes",
+                doc:frm.doc,
+                args:{
+                    "staged_tasks":frm.doc.staged_tasks
+                },
+                callback: function(r) {
+                    frm.refresh_fields("staged_tasks")
+                    frm.refresh_fields("changed_tasks")
+                        
+                    
+                }
+            });
+        })
 	},
     fetch_tasks(frm){
+        frm.clear_table("changed_tasks")
+        frm.clear_table("staged_tasks")
         frappe.call({
             method: "get_changed_tasks",
             doc:frm.doc,

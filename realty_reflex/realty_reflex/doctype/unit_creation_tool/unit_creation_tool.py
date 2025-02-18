@@ -207,7 +207,7 @@ def create_unit(doc, method=None):
 
         # Create or update units up to new_qty
         for unit_no in range(1, new_qty + 1):
-            generated_unit_no = f"{name_of_unit}-{floor} Floor {get_unit_name(unit_no)}"
+            generated_unit_no = f"{name_of_unit}-{floor}{get_unit_name(unit_no)}"
 
             if generated_unit_no in existing_unit_nos:
                 # Update existing unit
