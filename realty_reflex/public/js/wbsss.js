@@ -214,108 +214,128 @@
 frappe.provide("frappe.treeview_settings");
 
 frappe.treeview_settings["Task"] = {
-   get_tree_nodes: "erpnext.projects.doctype.task.task.get_children",
-   get_tree_root: false,
-   root_label: "All Tasks",
-   ignore_fields: ["parent_task"],
-   expand_all: true,
-  
-   on_get_node: function (nodes, deep = false) {
-       const project = frappe.project_selector.current_project;
-      
-       $('.task-headers').remove();
-      
-       if (!nodes[0]?.parent_task) {
-           const headerHTML = `
-              <div class="task-headers" style="
-                  display: flex;
-                  justify-content: flex-end;
-                  margin-bottom: 10px;
-                  border-bottom: 1px solid #d1d8dd;
-                  background-color: #f7fafc;
-                  padding-top: 8px;
-                  padding-bottom: 8px;
-                  position: sticky;
-                  top: 60px;
-                  z-index: 0;
-                  padding-right: 20px;
-                  pointer-events: none;
-              ">
-                  <div style="width: 125px; text-align: left; font-weight: 700;">Type</div>
-                  <div style="width: 135px; text-align: center; font-weight: 700;">Status</div>
-                  <div style="width: 120px; text-align: center; font-weight: 700;">Allocated</div>
-                  <div style="width: 120px; text-align: center; font-weight: 700;">Amount</div>
-                  <div style="width: 120px; text-align: right; font-weight: 700;">Current Amount</div>
-              </div>
-           `;
-           $('.tree').prepend(headerHTML);
-       }
+    get_tree_nodes: "erpnext.projects.doctype.task.task.get_children",
+    get_tree_root: false,
+    root_label: "All Tasks",
+    ignore_fields: ["parent_task"],
+    expand_all: true,
+    on_get_node: function (nodes, deep = false) {
+        const project = frappe.project_selector.current_project;
+        
+        $('.task-headers').remove();
+        
+        if (!nodes[0]?.parent_task) {
+            const headerHTML = `
+                <div class="task-headers" style="
+                    display: flex;
+                    justify-content: flex-end;
+                    margin-bottom: 10px;
+                    border-bottom: 1px solid #d1d8dd;
+                    background-color: #f7fafc;
+                    padding-top: 8px;
+                    padding-bottom: 8px;
+                    position: sticky;
+                    top: 60px;
+                    z-index: 0;
+                    padding-right: 20px;
+                    pointer-events: none;
+                    margin-left: 300px;
+                ">
+                    <div style="width: 125px; text-align: left; font-weight: 700;">Type</div>
+                    <div style="width: 135px; text-align: center; font-weight: 700;">Status</div>
+                    <div style="width: 120px; text-align: center; font-weight: 700;">Allocated</div>
+                    <div style="width: 120px; text-align: center; font-weight: 700;">Amount</div>
+                    <div style="width: 120px; text-align: right; font-weight: 700;">Current Amount</div>
+                </div>
+            `;
+            $('.tree').prepend(headerHTML);
+        }
 
-       const get_balances = frappe.call({
-           method: "realty_reflex.api.get_task_value",
-           args: {
-               project: project
-           },
-       });
-      
-       get_balances.then((r) => {
-           for (let task of r.message) {
-               const node = cur_tree.nodes && cur_tree.nodes[task.name];
-               if (!node) continue;
-              
-               node.$tree_link.find(".balance-area").remove();
-              
-               const amount = parseFloat(task.custom_release_amount || 0);
-               const currentAmount = parseFloat(task.custom_total_budget_allocated || 0);
-               const hasDifference = amount !== currentAmount;
-               const currentAmountColor = hasDifference ? 'red' : 'green';
-              
-               const displayHTML = `
-                   <div class="balance-area" style="
-                       display: flex;
-                       position: absolute;
-                       right: 20px;
-                       top: 50%;
-                       transform: translateY(-50%);
-                       gap: 0;
-                       cursor: pointer;
-                   ">
-                       <div style="width: 120px; text-align: left; padding-right: 20px; font-weight: 600;">${task.custom_release_budget_type || 'N/A'}</div>
-                       <div style="width: 160px; text-align: center; padding-right: 20px; font-weight: 600;">${task.custom_substatus || 'N/A'}</div>
-                       <div style="width: 100px; text-align: center; padding-right: 28px; font-weight: 600;">${task.custom_release_allocated_amount || '0'}</div>
-                       <div style="width: 130px; text-align: center; padding-right: 15px; font-weight: 600;">${task.custom_release_amount || '0'}</div>
-                       <div style="width: 100px; text-align: right; background-color: ${currentAmountColor}; color: white; padding: 2px 8px; border-radius: 3px; font-weight: 600;">${task.custom_total_budget_allocated || '0'}</div>
-                   </div>
-               `;
-              
-               node.$tree_link.css({
-                   'position': 'relative',
-                   'height': '30px',
-                   'display': 'flex',
-                   'align-items': 'center',
-                   'cursor': 'pointer'
-               });
-              
-               node.$tree_link.append(displayHTML);
+        const get_balances = frappe.call({
+            method: "realty_reflex.api.get_task_value",
+            args: {
+                project: project
+            },
+        });
+        
+        get_balances.then((r) => {
+            for (let task of r.message) {
+                const node = cur_tree.nodes && cur_tree.nodes[task.name];
+                if (!node) continue;
+                
+                node.$tree_link.find(".balance-area").remove();
+                
+                const amount = parseFloat(task.custom_release_amount || 0);
+                const currentAmount = parseFloat(task.custom_total_budget_allocated || 0);
+                const hasDifference = amount !== currentAmount;
+                const currentAmountColor = hasDifference ? 'red' : 'green';
 
-               // Add click handler for the entire row
-               node.$tree_link.on('click', function(e) {
-                   // Don't trigger if clicking on tree expansion arrows
-                   if (!$(e.target).hasClass('octicon')) {
-                       if (cur_tree.toolbar) {
-                           cur_tree.selected_node = node;
-                           cur_tree.toolbar.show();
-                       }
-                       // Add a subtle highlight effect
-                       $(this).css('background-color', '#f8f8f8');
-                       setTimeout(() => {
-                           $(this).css('background-color', '');
-                       }, 200);
-                   }
-               });
-           }
-       });
-   },
+                // Calculate the nesting level
+                const nestingLevel = node.$tree_link.parents('li').length;
+                const baseIndent = 20; // Base indentation
+                const levelIndent = nestingLevel * 20; // Additional indent per level
+                const maxTaskWidth = 250 - levelIndent; // Adjust max width based on nesting
+
+                // Style the tree link container
+                node.$tree_link.css({
+                    'display': 'flex',
+                    'align-items': 'center',
+                    'position': 'relative',
+                    'height': '30px',
+                    'cursor': 'pointer',
+                    'padding-right': '620px' // Space for the right-side columns
+                });
+
+                // Style the task label container
+                const $taskLabel = node.$tree_link.find('.tree-label');
+                $taskLabel.css({
+                    'max-width': `${maxTaskWidth}px`,
+                    'white-space': 'nowrap',
+                    'overflow': 'hidden',
+                    'text-overflow': 'ellipsis',
+                    'display': 'block'
+                });
+
+                // Add tooltip for long text
+                $taskLabel.attr('title', $taskLabel.text());
+                
+                const displayHTML = `
+                    <div class="balance-area" style="
+                        display: flex;
+                        position: absolute;
+                        right: 20px;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        gap: 0;
+                        cursor: pointer;
+                        background-color: white;
+                    ">
+                        <div style="width: 120px; text-align: left; padding-right: 20px; font-weight: 600;">${task.custom_release_budget_type || 'N/A'}</div>
+                        <div style="width: 160px; text-align: center; padding-right: 20px; font-weight: 600;">${task.custom_substatus || 'N/A'}</div>
+                        <div style="width: 100px; text-align: center; padding-right: 28px; font-weight: 600;">${task.custom_release_allocated_amount || '0'}</div>
+                        <div style="width: 130px; text-align: center; padding-right: 15px; font-weight: 600;">${task.custom_release_amount || '0'}</div>
+                        <div style="width: 100px; text-align: right; background-color: ${currentAmountColor}; color: white; padding: 2px 8px; border-radius: 3px; font-weight: 600;">${task.custom_total_budget_allocated || '0'}</div>
+                    </div>
+                `;
+                
+                node.$tree_link.append(displayHTML);
+
+                // Click handler
+                node.$tree_link.on('click', function(e) {
+                    if (!$(e.target).hasClass('octicon')) {
+                        if (cur_tree.toolbar) {
+                            cur_tree.selected_node = node;
+                            cur_tree.toolbar.show();
+                        }
+                        $(this).css('background-color', '#f8f8f8');
+                        setTimeout(() => {
+                            $(this).css('background-color', '');
+                        }, 200);
+                    }
+                });
+            }
+        });
+    },
 
 
     
