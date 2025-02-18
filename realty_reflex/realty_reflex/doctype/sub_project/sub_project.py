@@ -149,6 +149,22 @@ def update_revision(self, method = None):
 		# Update the stored JSON data
 		# self.custom_validate_data = json.dumps(current_values)
 
+@frappe.whitelist()
+def get_all_units(project_name, sub_project):
+    """
+    Fetch all Unit records based on project_name and tower_name.
+    """
+    try:
+        units = frappe.get_all(
+            "Unit",
+            filters={"project_name": project_name, "sub_project": sub_project},
+            fields=["*"]  # Fetch all fields
+        )
+        return units
+    except Exception as e:
+        frappe.log_error(f"Error fetching units: {str(e)}", "get_all_units")
+        return {"error": str(e)}
+
 
 
 
