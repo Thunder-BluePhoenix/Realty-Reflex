@@ -57,7 +57,7 @@ doctype_list_js = {
 }
 
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
-doctype_tree_js = {"Task" : "public/js/wbsss.js"}
+doctype_tree_js = {"Task" : "public/js/wbs_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
 # Svg Icons
