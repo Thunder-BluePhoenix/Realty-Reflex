@@ -84,8 +84,7 @@
    "fieldtype": "Link",
    "label": "Floor",
    "length": 1000,
-   "options": "Floors",
-   "reqd": 1
+   "options": "Floors"
   },
   {
    "fieldname": "floor_type",
@@ -404,7 +403,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-02-05 14:07:36.615666",
+ "modified": "2025-03-03 14:47:02.675726",
  "modified_by": "Administrator",
  "module": "Realty Reflex",
  "name": "Unit",

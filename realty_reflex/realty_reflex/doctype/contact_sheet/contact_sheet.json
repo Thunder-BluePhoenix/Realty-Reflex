@@ -1,0 +1,49 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-03-03 13:32:16.996364",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "profession",
+  "company_represent",
+  "contact"
+ ],
+ "fields": [
+  {
+   "fieldname": "profession",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Profession",
+   "options": "\nDESIGN ARCHITECT\nLIASON ARCHITECT\nSTRUCTURAL CONSULATNT\nINTERIOR CONSULTANT\nMEP CONSULTANT\nLIGHTING CONSULTANT\nTRAFFIC CONSULTANT\nSIGNAGE GRAPHICS CONSULTANT\nHYDROGEOLOGY CONSULTANT\nRERA CONSULTANT\nBIM CONSULTANT\nPROJECT HO MANAGER\nBILLING ENGINEER\nRERA DOCUMENTATION ENGINEER\nPURCHASE ENGINEER\nDESIGN CO-ORDINATOR\nMEP CO-ORDINATOR\nPLANNING ENGINEER\nCONSTRUCTION MANAGER\nSITE STORE KEEPER\nSITE PLANNING ENGINEER\nSITE SAFETY OFFICER/ MANAGER\nSITE QUALITY ENGINEER"
+  },
+  {
+   "fieldname": "company_represent",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Company Represent",
+   "options": "Supplier"
+  },
+  {
+   "fieldname": "contact",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Contact",
+   "options": "Contact"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-03-03 13:32:16.996364",
+ "modified_by": "Administrator",
+ "module": "Realty Reflex",
+ "name": "Contact Sheet",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
